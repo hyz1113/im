@@ -1,0 +1,88 @@
+{
+  "root": true,
+  "plugins": [
+      "stylelint-order",
+      "stylelint-scss"
+  ],
+  "extends": [
+      "stylelint-config-standard",
+      "stylelint-config-prettier"
+  ],
+  "rules": {
+    "indentation": 4,
+    "selector-pseudo-class-no-unknown": [
+        true,
+      {
+        "ignorePseudoClasses": [
+            "deep"
+        ]
+      }
+    ],
+    "at-rule-no-unknown": null,
+    "scss/at-rule-no-unknown": true,
+    "no-empty-source": null,
+    "named-grid-areas-no-invalid": null,
+    "unicode-bom": "never",
+    "font-family-no-missing-generic-family-keyword": null,
+    "declaration-colon-space-after": "always-single-line",
+    "declaration-colon-space-before": "never",
+    "selector-class-pattern": [
+        "^(([a-z0-9]+(-[a-z0-9]+)*)|el\\-(.+)|van\\-(.+))$",
+      {
+        "message": "Please name CSS classes like this: '.my-class-name'",
+        "severity": "warning"
+      }
+    ],
+    "selector-pseudo-element-no-unknown": [
+        true,
+      {
+        "ignorePseudoElements": [
+            "v-deep"
+        ]
+      }
+    ],
+    "order/order": [
+      [
+          "dollar-variables",
+          "custom-properties",
+          "at-rules",
+          "declarations",
+        {
+          "type": "at-rule",
+          "name": "supports"
+        },
+        {
+          "type": "at-rule",
+          "name": "media"
+        },
+          "rules"
+      ],
+      {
+        "severity": "warning"
+      }
+    ],
+    "unit-no-unknown": [
+        true,
+      {
+        "ignoreUnits": [
+            "rpx"
+        ]
+      }
+    ],
+    "selector-id-pattern": [
+        "^(([a-z0-9]+(-[a-z0-9]+)*)|el\\-(.+)|van\\-(.+))$",
+      {
+        "message": "Please name CSS ID like this: '#my-id-name'",
+        "severity": "warning"
+      }
+    ],
+    "no-descending-specificity": null,
+    "ignoreFiles": [
+        "**/*.js",
+        "**/*.jsx",
+        "**/*.tsx",
+        "**/*.ts",
+        "**/*.json"
+    ]
+  }
+}
