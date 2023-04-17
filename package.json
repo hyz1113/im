@@ -25,6 +25,8 @@
     "stylelint-config-standard": "^32.0.0",
     "stylelint-order": "^6.0.3",
     "stylelint-scss": "^4.6.0",
+    "vant": "^4.2.0",
+    "vconsole": "^3.15.0",
     "vue": "^3.2.13",
     "vue-class-component": "^8.0.0-0",
     "vue-router": "^4.0.3",

@@ -1,6 +1,16 @@
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import vant from 'vant';
+import vconsole from '@/utils/vconsole';
+import 'vant/lib/index.css';
+import "@/assets/styles/mixins.scss"
 
-createApp(App).use(store).use(router).mount('#app')
+const app = createApp(App)
+
+ app.use(store)
+    .use(router)
+    .use(vant)
+    .use(vconsole)
+    .mount('#app')

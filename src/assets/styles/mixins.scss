@@ -1,0 +1,45 @@
+$margins: 5px, 10px, 15px, 20px, 25px;
+$rows: 1, 2, 3, 4, 5;
+
+@each $key in $rows {
+    .text-ellipsis-#{$key} {
+        display: -webkit-box;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -webkit-line-clamp: #{$key};
+        -webkit-box-orient: vertical;
+    }
+}
+
+@each $key in $margins {
+    .m-l-#{key} {
+        margin-left: #{$key}px;
+    }
+    .m-t-#{key} {
+        margin-top: #{$key}px;
+    }
+    .m-r-#{key} {
+        margin-right: #{$key}px;
+    }
+    .m-b-#{key} {
+        margin-bottom: #{$key}px;
+    }
+}
+
+@mixin flex-align($v: flex-start, $h: flex-start) {
+    display: flex;
+    align-items: $h;
+    justify-content: $v;
+}
+
+@mixin w-h($w, $h, $br: 0) {
+    width: $w;
+    height: $h;
+    border-radius: $br;
+}
+
+@mixin f-s-color($fs, $color, $fw: normal) {
+    font-size: $fs;
+    color: $color;
+    font-weight: $fw;
+}
