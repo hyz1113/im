@@ -106,7 +106,7 @@ export default {
       }
     }
   time {
-    @include f-s-color(12px, #999);
+    @include f-s-color(13px, #999);
   }
 }
 </style>
