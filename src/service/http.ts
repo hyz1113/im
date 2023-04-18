@@ -48,14 +48,30 @@ const transformResponse = (res: any) => {
 };
 
 
+/* 实例化请求配置 */
+const instance = axios.create({
+    headers: {
+        //php 的 post 传输请求头一定要这个 不然报错 接收不到值
+        "Content-Type": "application/json;charset=UTF-8",
+        "Access-Control-Allow-Origin-Type": "*",
+        "Accept-Language": "en-us" // TODO 根据当前页面语言传参数
+    },
+    // 请求时长
+    timeout: 1000 * 30,
+    // 请求的base地址 TODO:这块以后根据不同的模块调不同的api
+    baseURL: process.env.VUE_APP_API_URL,
+    //     ? "测试"
+    //     : "正式",
+    // 表示跨域请求时是否需要使用凭证
+    withCredentials: false,
+});
+
+
 // 请求参数处理
-axios.interceptors.request.use((config:any) => {
-    // eslint-disable-next-line
+instance.interceptors.request.use((config:any) => {
   config.params = {
         ...config.params,
     };
-
-    // eslint-disable-next-line
   config.headers = {
         'Accept-Language': getLang(),
         'Content-Type': 'application/json',
@@ -67,7 +83,7 @@ axios.interceptors.request.use((config:any) => {
 
 
 // 响应拦截器
-axios.interceptors.response.use((res: any) => transformResponse(res), (err:any) => error(err));
+instance.interceptors.response.use((res: any) => transformResponse(res), (err:any) => error(err));
 
 export class Request {
   /**
@@ -78,8 +94,6 @@ export class Request {
    * @param headers
    */
   static get = (url: string, params?: any, headers: Record<string, any> = {}) => {
-      const path = window.location.pathname.split('/');
-      const lang = path[1];
       return new Promise((resolve, reject) => {
           axios
               .get(url, { params })
