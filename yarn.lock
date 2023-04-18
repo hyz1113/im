@@ -10214,6 +10214,16 @@ thunky@^1.0.2:
   resolved "http://nexus.huobidev.com:8081/repository/huobi-npm/thunky/-/thunky-1.1.0.tgz#5abaf714a9405db0504732bbccd2cedd9ef9537d"
   integrity sha512-eHY7nBftgThBqOyHGVN+l8gF0BucP09fMo0oO/Lb0w1OF80dJv+lDVpXG60WMQvkcxAkNybKsrEIE3ZtKGmPrA==
 
+tim-js-sdk@^2.27.0:
+  version "2.27.0"
+  resolved "http://nexus.huobidev.com:8081/repository/huobi-npm/tim-js-sdk/-/tim-js-sdk-2.27.0.tgz#b7ccf19a91af7f6234cada40a96c358744d1d5b7"
+  integrity sha512-5tzMuPJxXWhoBzVahWVgntROnYPwF5iMM9LPpS2RaBmccXKnOaYYTggrNnXa+j7TGcdgB/PKOfvJZNAOsjSbVA==
+
+tim-upload-plugin@^1.1.0:
+  version "1.1.0"
+  resolved "http://nexus.huobidev.com:8081/repository/huobi-npm/tim-upload-plugin/-/tim-upload-plugin-1.1.0.tgz#fb46120d6cdf0db190160eb842b7ff3dfaa7bf69"
+  integrity sha512-NAE8nZtYBFctQQLNPLHVsNWKbYnXbwRc2676Dv4JWvpaviJUvpIvjLGVoztmrpFey/HNhchz/LdRbACa6OT1Dg==
+
 timers-browserify@^2.0.4:
   version "2.0.12"
   resolved "http://nexus.huobidev.com:8081/repository/huobi-npm/timers-browserify/-/timers-browserify-2.0.12.tgz#44a45c11fbf407f34f97bccd1577c652361b00ee"

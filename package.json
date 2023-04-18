@@ -25,6 +25,8 @@
     "stylelint-config-standard": "^32.0.0",
     "stylelint-order": "^6.0.3",
     "stylelint-scss": "^4.6.0",
+    "tim-js-sdk": "^2.27.0",
+    "tim-upload-plugin": "^1.1.0",
     "vant": "^4.2.0",
     "vconsole": "^3.15.0",
     "vue": "^3.2.13",
