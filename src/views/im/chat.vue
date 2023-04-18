@@ -1,12 +1,12 @@
 <template>
   <div>
-      UID + 客户名 + chat
+    UID + 客户名 + chat
   </div>
 </template>
 
 <script>
 export default {
-name: "chat"
+  name: "chat"
 }
 </script>
 

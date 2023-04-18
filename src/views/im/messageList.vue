@@ -7,7 +7,7 @@
         :key="data"
         class="item">
       <van-cell-group>
-        <van-cell @click="togoDetail">
+        <van-cell @click="togoDetail(data)">
           <!-- 使用 title 插槽来自定义标题 -->
           <template #title>
             <div class="title">
@@ -34,9 +34,8 @@
 </template>
 
 <script>
-import {Cell, CellGroup} from 'vant';
 import { reactive, toRefs } from 'vue';
-
+import { useRouter } from 'vue-router';
 export default {
   name: "messageList",
   setup() {
@@ -74,13 +73,20 @@ export default {
         }
       ]
     })
+    const router = useRouter();
 
     const onRefresh = () => {
       state.count += 1;
     }
 
-    const togoDetail = () => {
-      alert('跳转至详情');
+    /*
+    * 跳转到详情
+    * */
+    const togoDetail = (data) => {
+      router.push({
+        path: '/chat',
+        query: { userId: data.customerName }
+      });
     }
 
 
