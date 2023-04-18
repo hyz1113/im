@@ -1,19 +1,25 @@
-import { createStore } from 'vuex'
-
-const state = {
+const im = {
+  namespaced: true,
+  state: {
     $tim: null,
-};
-
-const actions = {
-}
-
-export default createStore({
-  state,
+  },
   getters: {
+    getTim (state: any) {
+      return state.$tim
+    }
   },
   mutations: {
+    tim (state: any, value: any) {
+      state.$tim = value;
+    }
   },
-  actions,
+  actions: {
+    setTim (context: any, value: any) {
+      context.commit('tim', value)
+    }
+  },
   modules: {
   }
-})
+}
+
+export default im;

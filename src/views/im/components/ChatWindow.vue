@@ -1,13 +1,13 @@
 <template>
-  <div>{{ SDKAppID }}</div>
+  <div>{{ SDKAppID }} -- {{ ntim }}</div>
 </template>
 
 <script>
+import { useStore } from 'vuex'
 import TIM from 'tim-js-sdk';
 import TIMUploadPlugin from 'tim-upload-plugin';
-import {reactive, toRefs} from 'vue';
+import {reactive, toRefs, computed} from 'vue';
 import {im} from '@/api/im/api';
-import Vue from 'vue';
 
 export default {
   name: "ChatWindow",
@@ -17,8 +17,9 @@ export default {
   setup() {
     const state = reactive({
       SDKAppID: null, // 接入时需要将0替换为您的即时通信 IM 应用的 SDKAppID
-
+      ntim: null
     });
+    const { getters, dispatch } = useStore();
 
     /**
      * 初始化 IM 实例
@@ -33,9 +34,13 @@ export default {
       tim.setLogLevel(1); // release 级别，SDK 输出关键信息，生产环境时建议使用
       // 注册腾讯云即时通信 IM 上传插件
       tim.registerPlugin({ 'tim-upload-plugin': TIMUploadPlugin });
-      // 在vue上注册全局的tim
-      debugger
-      Vue.prototype.$tim = tim;
+
+      // 注册全局的tim
+      dispatch('im/setTim', tim).then((res) => {
+        state.ntim = computed(() => getters['im/getTim']);
+      }).catch((err) => {
+        console.log(err)
+      })
     }
 
     /**
