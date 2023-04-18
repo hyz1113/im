@@ -74,7 +74,6 @@ instance.interceptors.request.use((config:any) => {
     };
   config.headers = {
         'Accept-Language': getLang(),
-        'Content-Type': 'application/json',
         'Admin-Token': localStorage.getItem('Admin-Token') || '',
         ...config.headers,
     };
@@ -98,7 +97,7 @@ export class Request {
           axios
               .get(url, { params })
               .then((res:any) => {
-                  resolve(res);
+                  resolve(res.data);
               })
               .catch((err: any) => {
                   reject(err);
@@ -107,13 +106,11 @@ export class Request {
   };
 
   static post = (url: string, params?: any, headers: Record<string, any> = {}) => {
-      const path = window.location.pathname.split('/');
-      const lang = path[1];
       return new Promise((resolve, reject) => {
           axios
               .post(url, { ...params }, headers)
               .then((res: any) => {
-                  resolve(res);
+                  resolve(res.data);
               })
               .catch((err: any) => {
                   reject(err);
