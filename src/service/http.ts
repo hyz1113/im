@@ -59,9 +59,9 @@ const instance = axios.create({
     // 请求时长
     timeout: 1000 * 30,
     // 请求的base地址 TODO:这块以后根据不同的模块调不同的api
-    baseURL: process.env.VUE_APP_API_URL,
-    //     ? "测试"
-    //     : "正式",
+    baseURL: process.env.NODE_ENV === "test"
+        ? "http://hbg-kol-crm-gateway.global-base.tc-jp1.huobiapps.com"
+        : "http://hbg-kol-crm-gateway.global-base.tc-jp1.huobiapps.com",
     // 表示跨域请求时是否需要使用凭证
     withCredentials: false,
 });

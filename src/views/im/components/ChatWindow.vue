@@ -85,7 +85,7 @@ export default {
     /**
      * 初始化 IM 实例
      * */
-    const initIMObject = () => {
+    const initIMObject = async () => {
       let options = {
         SDKAppID: +state.SDKAppID,
         oversea: true, // 添加允许在海外使用，
@@ -96,15 +96,15 @@ export default {
       // 注册腾讯云即时通信 IM 上传插件
       tim.registerPlugin({'tim-upload-plugin': TIMUploadPlugin});
 
-      debugger;
       state.$tim = tim;
-      console.log(`获取到的 ￥tim ====${state.$tim}`);
+      await bindTimEventListener();
+      await fetchMessageList();
       // 注册全局的tim
-      dispatch('im/setTim', tim).then((res) => {
-        state.ntim = computed(() => getters['im/getTim']);
-      }).catch((err) => {
-        console.log(err)
-      })
+      // dispatch('im/setTim', tim).then((res) => {
+      //   state.ntim = computed(() => getters['im/getTim']);
+      // }).catch((err) => {
+      //   console.log(err)
+      // })
     }
 
     const onRefresh = () => {
@@ -116,6 +116,7 @@ export default {
     }
 
     const fetchMessageListByTim = async () => {
+      debugger
       try {
         const options = {
           conversationID: 'C2C30071520',
@@ -124,8 +125,8 @@ export default {
         // if (this.nextReqMessageID) { // 续拉数据
         //   options.nextReqMessageID = this.nextReqMessageID;
         // }
-        console.log('4444========');
         const messageListResponse = await state.$tim.getMessageList(options);
+        debugger
         console.log('messageListResponse::', messageListResponse);
         if (messageListResponse.code === 0 && messageListResponse.data) {
           const msgListData = messageListResponse.data;
@@ -141,7 +142,6 @@ export default {
 
     const fetchMessageList = async () => {
       let messageList = [];
-
       if (!state.isTimCompleted) {
         messageList = await fetchMessageListByTim();
       }
@@ -152,6 +152,7 @@ export default {
       }
       const newMessageList = await buildMessageNickName(messageList);
       state.messageList = [...newMessageList, ...state.messageList];
+      debugger
       await setMessageRead();
     }
 
@@ -283,6 +284,69 @@ export default {
       //   });
       // }
     };
+
+    const onTimReceivedMessage = async (event) => {
+      const messages = Array.isArray(event.data) ? event.data : [];
+      if (messages.length) {
+        let messageList = messages.filter(item => item.conversationID === this.conversationId);
+        messageList = await buildMessageNickName(messageList);
+        messageList.forEach(item => {
+          state.messageList.push(item);
+        });
+      }
+      updateUnreadMessageCount();
+    };
+
+    const bindTimEventListener = () => {
+      state.$tim.on(TIM.EVENT.MESSAGE_RECEIVED, onTimReceivedMessage, this);
+      state.$tim.on(TIM.EVENT.MESSAGE_MODIFIED, onTimModifiedMessage, this);
+      state.$tim.on(TIM.EVENT.MESSAGE_REVOKED, onTimRevokedMessage, this);
+      state.$tim.on(TIM.EVENT.MESSAGE_READ_BY_PEER, onTimMessageReadByPeer, this);
+    };
+
+    const onTimRevokedMessage = (event) => {
+      const messages = Array.isArray(event.data) ? event.data : [];
+      if (messages.length) {
+        messages.forEach(item => {
+          const index = state.messageList.findIndex(message => item.ID === message.ID);
+          if (index > -1) {
+            state.messageList.splice(index, 1);
+            state.messageList.push(item);
+          }
+        });
+      }
+      updateUnreadMessageCount();
+    };
+
+    const onTimMessageReadByPeer = (event) => {
+      const readMessages = Array.isArray(event.data) ? event.data : [];
+      const readMessageIdSet = new Set();
+      if (readMessages.length) {
+        readMessages.forEach(item => readMessageIdSet.add(item.ID));
+        state.messageList.forEach(item => {
+          if (readMessageIdSet.has(item.ID)) {
+            item.isPeerRead = true;
+          }
+        })
+      }
+      updateUnreadMessageCount();
+    };
+
+    const updateUnreadMessageCount = () => {
+      console.log('更新未读的消息个数');
+    };
+
+    const onTimModifiedMessage = (event) => {
+      console.log(event);
+    };
+
+    const unBindTimeEventListener = () => {
+      state.$tim.off(TIM.EVENT.MESSAGE_RECEIVED, onTimReceivedMessage);
+      state.$tim.off(TIM.EVENT.MESSAGE_MODIFIED, onTimModifiedMessage);
+      state.$tim.off(TIM.EVENT.MESSAGE_REVOKED, onTimRevokedMessage);
+      state.$tim.off(TIM.EVENT.MESSAGE_READ_BY_PEER, onTimMessageReadByPeer);
+    };
+
     /**
      * 请求后端的接口进行获取IM的的appId
      * */
@@ -298,10 +362,12 @@ export default {
     }
 
     await getIMAppId();
-    await fetchMessageList();
 
     onMounted(() => {
       debugger
+      if (state.$tim) {
+
+      }
     })
 
     return {
