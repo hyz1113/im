@@ -35,7 +35,7 @@
 import {useStore} from 'vuex'
 import TIM from 'tim-js-sdk';
 import TIMUploadPlugin from 'tim-upload-plugin';
-import {reactive, toRefs, computed, onMounted} from 'vue';
+import {reactive, toRefs, getCurrentInstance, computed, onMounted, onUnmounted} from 'vue';
 import {im} from '@/api/im/api';
 import {List} from 'vant';
 import MessageBubble from './messages/bubble';
@@ -45,6 +45,7 @@ import MessageImage from './messages/image';
 import MessageAudio from './messages/audio';
 import MessageFace from './messages/face';
 import MessageNotSupport from './messages/notSupport';
+import { IMBase } from '../mixins/base';
 
 export default {
   name: "ChatWindow",
@@ -63,7 +64,6 @@ export default {
     const state = reactive({
       SDKAppID: null, // 接入时需要将0替换为您的即时通信 IM 应用的 SDKAppID
       ntim: null,
-      $tim: null,
       finished: false,
       loading: false,
       messageList: [],
@@ -76,40 +76,54 @@ export default {
       nextReqMessage: null,
       messageNickNameMap: new Map(),
     });
-    const {getters, dispatch} = useStore();
+    const {dispatch} = useStore();
+    const { proxy } = getCurrentInstance();
 
     let TYPES = computed(() => {
       return TIM.TYPES
     })
 
-    /**
-     * 初始化 IM 实例
-     * */
-    const initIMObject = async () => {
-      let options = {
-        SDKAppID: +state.SDKAppID,
-        oversea: true, // 添加允许在海外使用，
-      };
-      let tim = TIM.create(options); // SDK 实例通常用 tim 表示
-      // 设置 SDK 日志输出级别，详细分级请参见 <a href="https://web.sdk.qcloud.com/im/doc/zh-cn/SDK.html#setLogLevel">setLogLevel 接口的说明</a>
-      tim.setLogLevel(1); // release 级别，SDK 输出关键信息，生产环境时建议使用
-      // 注册腾讯云即时通信 IM 上传插件
-      tim.registerPlugin({'tim-upload-plugin': TIMUploadPlugin});
-
-      state.$tim = tim;
-      await bindTimEventListener();
-      await fetchMessageList();
-      // 注册全局的tim
-      // dispatch('im/setTim', tim).then((res) => {
-      //   state.ntim = computed(() => getters['im/getTim']);
-      // }).catch((err) => {
-      //   console.log(err)
-      // })
-    }
-
     const onRefresh = () => {
       console.log('111');
     }
+
+   const {
+        imBaseState,
+        createTencentTim,
+        loginTim,
+        loginOutTim,
+        checkUserCanUseIm } = IMBase();
+
+    const startTimLoginLoop = async () => {
+      if (!imBaseState.$tim) {
+        return;
+      }
+      if (imBaseState.timCommonAccounts.length) {
+        await loginOutTim();
+        imBaseState.currentLoginCommonAccount = imBaseState.timCommonAccounts[imBaseState.currentLoginIndex] || null;
+        await loginTim();
+        if (imBaseState.timCommonAccounts.length > 1) {
+          imBaseState.currentLoginIndex += 1;
+          if (imBaseState.currentLoginIndex >= imBaseState.timCommonAccounts.length) {
+            imBaseState.currentLoginIndex = 0;
+          }
+          // 这里面定时15秒进行刷新
+          imBaseState.loginTimTimer = setTimeout(() => {
+            startTimLoginLoop();
+          }, 15000);
+        }
+      }
+    };
+    const stopTimLoginLoop = async () => {
+      if (imBaseState.loginTimTimer) {
+        clearTimeout(imBaseState.loginTimTimer);
+        imBaseState.loginTimTimer = null;
+      }
+      if (imBaseState.isLoginTim && imBaseState.$tim) {
+        await loginOutTim();
+      }
+    };
+
 
     const onMessageItemContextmenu = () => {
       console.log('222');
@@ -354,7 +368,8 @@ export default {
       im.getTimAppId()
           .then((res) => {
             state.SDKAppID = res.data || null;
-            initIMObject(); // 初始化 实例对象
+            debugger
+            createTencentTim(); // 初始化 实例对象
           })
           .catch((err) => {
             console.log(err);
@@ -363,11 +378,20 @@ export default {
 
     await getIMAppId();
 
-    onMounted(() => {
-      debugger
-      if (state.$tim) {
-
+    onMounted(async () => {
+      await checkUserCanUseIm();
+      if (imBaseState.canUseIm) {
+        await createTencentTim();
+        await bindTimEventListener();
       }
+      await fetchMessageList();
+    })
+
+    onUnmounted(async () => {
+      await stopTimLoginLoop();
+      bindTimEventListener();
+      await imBaseState.$tim.destroy();
+      imBaseState.$tim = null;
     })
 
     return {

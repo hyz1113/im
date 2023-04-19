@@ -6,6 +6,7 @@ export const im = {
     getNickName: (params: Object) => Request.get('/kol/crmIm/query/nickName', {...params}),
     getHistoryMessageByServer: (params: Object) => Request.get('/kol/crmIm/getHistoryMsg', {...params}),
     recallMessage: (params: Object) => Request.get('/kol/crmIm/recall', {...params}),
+    checkUserIsImGray: () => Request.get('/kol/crmIm/gray'),
 }
 
 export default {
