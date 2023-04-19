@@ -35,7 +35,7 @@
 import {useStore} from 'vuex'
 import TIM from 'tim-js-sdk';
 import TIMUploadPlugin from 'tim-upload-plugin';
-import {reactive, toRefs, getCurrentInstance, computed, onMounted, onUnmounted} from 'vue';
+import {defineComponent, reactive, toRefs, getCurrentInstance, computed, onMounted, onUnmounted} from 'vue';
 import {im} from '@/api/im/api';
 import {List} from 'vant';
 import MessageBubble from './messages/bubble';
@@ -48,19 +48,7 @@ import MessageNotSupport from './messages/notSupport';
 import { IMBase } from '../mixins/base';
 
 export default {
-  name: "ChatWindow",
-  components: {
-    TIMUploadPlugin,
-    MessageTip,
-    MessageText,
-    MessageImage,
-    MessageAudio,
-    MessageFace,
-    MessageNotSupport,
-    MessageBubble,
-    List,
-  },
-  async setup() {
+  setup() {
     const state = reactive({
       SDKAppID: null, // 接入时需要将0替换为您的即时通信 IM 应用的 SDKAppID
       ntim: null,
@@ -166,7 +154,6 @@ export default {
       }
       const newMessageList = await buildMessageNickName(messageList);
       state.messageList = [...newMessageList, ...state.messageList];
-      debugger
       await setMessageRead();
     }
 
@@ -368,7 +355,6 @@ export default {
       im.getTimAppId()
           .then((res) => {
             state.SDKAppID = res.data || null;
-            debugger
             createTencentTim(); // 初始化 实例对象
           })
           .catch((err) => {
@@ -376,14 +362,14 @@ export default {
           })
     }
 
-    await getIMAppId();
-
-    onMounted(async () => {
+    getIMAppId();
+    onMounted( async () => {
       await checkUserCanUseIm();
       if (imBaseState.canUseIm) {
         await createTencentTim();
         await bindTimEventListener();
       }
+      debugger;
       await fetchMessageList();
     })
 
@@ -399,6 +385,17 @@ export default {
       onRefresh,
       onMessageItemContextmenu,
     }
+  },
+  components: {
+    TIMUploadPlugin,
+    MessageTip,
+    MessageText,
+    MessageImage,
+    MessageAudio,
+    MessageFace,
+    MessageNotSupport,
+    MessageBubble,
+    List,
   },
 }
 </script>
