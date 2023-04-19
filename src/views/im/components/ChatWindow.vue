@@ -1,22 +1,33 @@
 <template>
   <div>
     <div>{{ SDKAppID }} -- {{ ntim }}</div>
-    <van-pull-refresh v-model="loading" @refresh="onRefresh">
-      <message-bubble
-          v-else-if="!item.isRevoked"
-          :data="item"
-          @contextmenu="onMessageItemContextmenu">
-        <!-- 基础的文本消息 -->
-        <message-text v-if="item.type === TYPES.MSG_TEXT" :data="item"/>
-        <!--图片信息 -->
-        <message-image v-else-if="item.type === TYPES.MSG_IMAGE" :data="item"/>
-        <message-audio v-else-if="item.type === TYPES.MSG_AUDIO" :data="item" @play="onPlayAudit"/>
-        <!-- <message-file v-else-if="message.type === TYPES.MSG_FILE" :data="message" />-->
-        <message-face v-else-if="item.type === TYPES.MSG_FACE" :data="item"/>
-        <message-not-support v-else :data="item"/>
-
-      </message-bubble>
-    </van-pull-refresh>
+    <van-list
+        v-model:loading="loading"
+        :finished="finished"
+        finished-text="没有更多了"
+        @load="onRefresh"
+    >
+      <div
+          v-for="item in messageList"
+          :key="item"
+      >
+        {{ item }}==
+        <message-tip v-if="item.type === TYPES.MSG_GRP_TIP"></message-tip>
+        <message-bubble
+            v-else-if="!item.isRevoked"
+            :data="item"
+            @contextmenu="onMessageItemContextmenu">
+          <!-- 基础的文本消息 -->
+          <message-text v-if="item.type === TYPES.MSG_TEXT" :data="item"/>
+          <!--图片信息 -->
+          <message-image v-else-if="item.type === TYPES.MSG_IMAGE" :data="item"/>
+          <message-audio v-else-if="item.type === TYPES.MSG_AUDIO" :data="item" @play="onPlayAudit"/>
+          <!-- <message-file v-else-if="message.type === TYPES.MSG_FILE" :data="message" />-->
+          <message-face v-else-if="item.type === TYPES.MSG_FACE" :data="item"/>
+          <message-not-support v-else :data="item"/>
+        </message-bubble>
+      </div>
+    </van-list>
   </div>
 </template>
 
@@ -24,8 +35,9 @@
 import {useStore} from 'vuex'
 import TIM from 'tim-js-sdk';
 import TIMUploadPlugin from 'tim-upload-plugin';
-import {reactive, toRefs, computed} from 'vue';
+import {reactive, toRefs, computed, onMounted} from 'vue';
 import {im} from '@/api/im/api';
+import {List} from 'vant';
 import MessageBubble from './messages/bubble';
 import MessageTip from './messages/tip';
 import MessageText from './messages/text';
@@ -45,15 +57,30 @@ export default {
     MessageFace,
     MessageNotSupport,
     MessageBubble,
+    List,
   },
-  setup() {
+  async setup() {
     const state = reactive({
       SDKAppID: null, // 接入时需要将0替换为您的即时通信 IM 应用的 SDKAppID
       ntim: null,
+      $tim: null,
+      finished: false,
       loading: false,
       messageList: [],
+      isCompleted: false,
+      isTimCompleted: false,
+      isServerCompleted: false,
+      customerUid: 'customerUid', // 当前的用户id
+      // 吓一跳消息的ID
+      nextReqMessageID: '',
+      nextReqMessage: null,
+      messageNickNameMap: new Map(),
     });
     const {getters, dispatch} = useStore();
+
+    let TYPES = computed(() => {
+      return TIM.TYPES
+    })
 
     /**
      * 初始化 IM 实例
@@ -69,6 +96,9 @@ export default {
       // 注册腾讯云即时通信 IM 上传插件
       tim.registerPlugin({'tim-upload-plugin': TIMUploadPlugin});
 
+      debugger;
+      state.$tim = tim;
+      console.log(`获取到的 ￥tim ====${state.$tim}`);
       // 注册全局的tim
       dispatch('im/setTim', tim).then((res) => {
         state.ntim = computed(() => getters['im/getTim']);
@@ -88,18 +118,19 @@ export default {
     const fetchMessageListByTim = async () => {
       try {
         const options = {
-          conversationID: this.conversationId,
+          conversationID: 'C2C30071520',
         };
         // 如果存在有nextReq
-        if (this.nextReqMessageID) {
-          options.nextReqMessageID = this.nextReqMessageID;
-        }
-        const messageListResponse = await this.$tim.getMessageList(options);
+        // if (this.nextReqMessageID) { // 续拉数据
+        //   options.nextReqMessageID = this.nextReqMessageID;
+        // }
+        console.log('4444========');
+        const messageListResponse = await state.$tim.getMessageList(options);
         console.log('messageListResponse::', messageListResponse);
         if (messageListResponse.code === 0 && messageListResponse.data) {
           const msgListData = messageListResponse.data;
-          this.nextReqMessageID = msgListData.nextReqMessageID;
-          this.isTimCompleted = msgListData.isCompleted;
+          state.nextReqMessageID = msgListData.nextReqMessageID;
+          state.isTimCompleted = msgListData.isCompleted;
           return Array.isArray(msgListData.messageList) ? msgListData.messageList : [];
         }
       } catch (ex) {
@@ -111,19 +142,147 @@ export default {
     const fetchMessageList = async () => {
       let messageList = [];
 
-      if (!this.isTimCompleted) {
-        messageList = await this.fetchMessageListByTim();
+      if (!state.isTimCompleted) {
+        messageList = await fetchMessageListByTim();
       }
-      if (this.isTimCompleted && !this.isServerCompleted) {
-        const serverMessageList = await this.fetchMessageListByServer();
+      if (state.isTimCompleted && !state.isServerCompleted) {
+        const serverMessageList = await fetchMessageListByServer();
         messageList = [...serverMessageList, ...messageList];
-        this.nextReqMessageID = messageList[0] ? messageList[0].ID || null : null;
+        state.nextReqMessageID = messageList[0] ? messageList[0].ID || null : null;
       }
-      const newMessageList = await this.buildMessageNickName(messageList);
-      this.messageList = [...newMessageList, ...this.messageList];
-      await this.setMessageRead();
+      const newMessageList = await buildMessageNickName(messageList);
+      state.messageList = [...newMessageList, ...state.messageList];
+      await setMessageRead();
     }
 
+    const buildMessageKey = (message) => {
+      return `${message.sequence}_${message.random}_${message.time}`;
+    };
+
+    const fetchMessageListByServer = async () => {
+      let msgKey = state.nextReqMessageID;
+      if (state.nextReqMessage && !state.nextReqMessage.isServer) {
+        msgKey = buildMessageKey(state.nextReqMessage); // `${this.nextReqMessage.sequence}_${this.nextReqMessage.random}_${this.nextReqMessage.time}`;
+      }
+      const params = {
+        msgKey,
+        customerUid: state.customerUid,
+        limit: 10,
+      };
+      const res = await im.getHistoryMessageByServer(params);
+      if (res && Array.isArray(res.data) && res.data.length) {
+        const messageList = res.data.map(item => {
+          item.isServer = true;
+          item.ID = item.msgKey;
+          item.id = item.msgKey;
+          item.time = item.createTime / 1000;
+          try {
+            if (item.payload) {
+              item.payload = JSON.parse(item.payload)
+            }
+            if (item.type === TYPES.MSG_IMAGE) {
+              const imageInfoArray = item.payload.imageInfoArray;
+              if (Array.isArray(imageInfoArray)) {
+                imageInfoArray.forEach(imageInfo => {
+                  imageInfo.imageUrl = imageInfo.url;
+                })
+              }
+            }
+          } catch (e) {
+            console.log(e);
+            item.payload = {};
+          }
+          return item;
+        });
+        state.isServerCompleted = messageList.length < 10;
+        return messageList.reverse();
+      }
+      state.isServerCompleted = true;
+      return [];
+    };
+
+    const buildMessageNickName = async (messageList) => {
+      const notMapUserIds = [];
+      messageList.forEach(message => {
+        if (message.cloudCustomData) {
+          const messageCloudCustomData = message.cloudCustomData;
+          try {
+            const cloudCustomData = JSON.parse(messageCloudCustomData);
+            if (cloudCustomData) {
+              const userId = +cloudCustomData.userId;
+              // const senderUserName = this.messageNickNameMap.get(userId);
+              message.senderUserId = userId;
+              message.senderUserName = '';
+              message.senderEmployeeId = '';
+              const sender = state.messageNickNameMap.get(message.senderUserId);
+              if (!sender && userId) {
+                notMapUserIds.push(userId);
+              } else {
+                message.senderUserName = sender.imNickname || sender.realname || ''
+                message.senderEmployeeId = sender.employeeId || '';
+              }
+            }
+          } catch (ex) {
+            // console.log(ex);
+            message.senderUserId = '';
+            message.senderUserName = '';
+            message.senderEmployeeId = '';
+          }
+        }
+      });
+      if (notMapUserIds.length) {
+        const userIds = Array.from(new Set(notMapUserIds));
+        await fetchUserNickNameByUserIds(userIds);
+        for (let idx = 0; idx < messageList.length; idx++) {
+          const message = messageList[idx];
+          if (message.senderUserId) {
+            await setMessageSenderInfo(message);
+          }
+        }
+      }
+      return messageList;
+    };
+
+    const fetchUserNickNameByUserIds = async (userIds) => {
+      try {
+        const {data} = await im.getNickName({
+          userIds: userIds.join(',')
+        });
+        if (Array.isArray(data)) {
+          data.forEach(item => {
+            state.messageNickNameMap.set(+item.userId, item);
+          });
+        }
+      } catch (ex) {
+        const message = `根据UserIds查询用户的昵称接口调用报错：${ex.message || '请求报错'}`;
+        console.error(message);
+      }
+    };
+
+    const setMessageSenderInfo = async (message, needGet) => {
+      let sender = state.messageNickNameMap.get(message.senderUserId);
+      if (!sender && needGet) {
+        await fetchUserNickNameByUserIds([message.senderUserId]);
+        sender = state.messageNickNameMap.get(message.senderUserId);
+      }
+      if (sender) {
+        message.senderUserName = sender.imNickname || sender.realname || ''
+        message.senderEmployeeId = sender.employeeId || '';
+      } else {
+        message.senderUserName = '';
+        message.senderEmployeeId = '';
+      }
+    };
+
+
+    const setMessageRead = async () => {
+      // if (+this.userInfo.userId === +this.commonAccountInfo.adminUserId) {
+      //   await state.$tim.setMessageRead({
+      //     // conversationID: this.conversationId
+      //     conversationID: 'C2C30071520'
+      //   });
+      // }
+    };
     /**
      * 请求后端的接口进行获取IM的的appId
      * */
@@ -138,7 +297,12 @@ export default {
           })
     }
 
-    getIMAppId();
+    await getIMAppId();
+    await fetchMessageList();
+
+    onMounted(() => {
+      debugger
+    })
 
     return {
       ...toRefs(state),

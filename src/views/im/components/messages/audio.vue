@@ -47,7 +47,7 @@ export default {
         &.icon-voice {
             width: 20px;
             height: 20px;
-            background: url('../../../../../assets/images/im/voice.png') no-repeat center;
+            background: red;
             background-size: 100%;
         }
     }

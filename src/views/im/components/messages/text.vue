@@ -8,7 +8,7 @@
     </div>
 </template>
 <script>
-import { decodeText } from '../../../IMUtils/decodeText';
+import { decodeText } from '@/views/im/utils/decodeText';
 
 export default {
     name: 'MessageText',
@@ -65,7 +65,7 @@ export default {
         line-height: 20px;
         color: #333333;
     }
-    /deep/ .text-box {
+    ::v-deep .text-box {
         b {
             color: red;
         }

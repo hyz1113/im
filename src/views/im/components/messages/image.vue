@@ -1,12 +1,10 @@
 <template>
     <div class="message-image">
-        <el-image
+        <van-image
             class="message-img"
-            fit="cover"
             :style="imageStyle"
             :src="displayImageInfo.imageUrl"
-            :preview-src-list="srcList">
-        </el-image>
+        />
     </div>
 </template>
 
