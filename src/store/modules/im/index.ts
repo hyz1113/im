@@ -5,7 +5,8 @@ const im = {
   },
   getters: {
     getTim (state: any) {
-      return state.$tim
+      const { $tim } = state;
+      return $tim
     }
   },
   mutations: {
