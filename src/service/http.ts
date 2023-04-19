@@ -54,6 +54,7 @@ const instance = axios.create({
         //php 的 post 传输请求头一定要这个 不然报错 接收不到值
         "Content-Type": "application/json;charset=UTF-8",
         "Access-Control-Allow-Origin-Type": "*",
+        'Admin-Token': localStorage.getItem('Admin-Token') || 'ST-210-ahjMD0Jlr24nB-UtqL-tTco4W8Yiam-cas-6dd9bdf7b6-ch9gk',
         "Accept-Language": "en-us" // TODO 根据当前页面语言传参数
     },
     // 请求时长
@@ -74,7 +75,6 @@ instance.interceptors.request.use((config:any) => {
     };
   config.headers = {
         'Accept-Language': getLang(),
-        'Admin-Token': localStorage.getItem('Admin-Token') || '',
         ...config.headers,
     };
     return config;
