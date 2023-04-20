@@ -44,11 +44,11 @@ export default {
       count: 0,
       list: [
         {
-          customerName: "23",
+          customerName: "423424",
           latestMsg: '3333',
           latestMsgTime: 1679994123,
           latestMsgUid: "41054496",
-          uid: "4324",
+          uid: "C2C234470313520",
         },
         {
           customerName: "23",
@@ -85,7 +85,7 @@ export default {
     const togoDetail = (data) => {
       router.push({
         path: '/chat',
-        query: { userId: data.customerName }
+        query: { userId: data.uid }
       });
     }
 

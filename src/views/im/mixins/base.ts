@@ -97,7 +97,6 @@ export function IMBase() {
             });
             console.log(loginTimRes);
             imBaseState.isLoginTim = true;
-            debugger
         } catch (ex) {
             console.log(ex);
             imBaseState.isLoginTim = false;

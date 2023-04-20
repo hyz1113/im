@@ -11,7 +11,6 @@
           v-for="item in messageList"
           :key="item"
       >
-        {{ item }}==
         <message-tip v-if="item.type === TYPES.MSG_GRP_TIP"></message-tip>
         <message-bubble
             v-else-if="!item.isRevoked"
@@ -33,9 +32,10 @@
 
 <script>
 import {useStore} from 'vuex'
-import TIM from "tim-js-sdk";
+import TIM from 'tim-js-sdk/tim-js-friendship';
 import TIMUploadPlugin from 'tim-upload-plugin';
-import {defineComponent, reactive, toRefs, getCurrentInstance, computed, onMounted, onUnmounted} from 'vue';
+import { reactive, toRefs, getCurrentInstance, computed, onMounted, onUnmounted} from 'vue';
+import { useRoute } from 'vue-router';
 import {im} from '@/api/im/api';
 import {List} from 'vant';
 import MessageBubble from './messages/bubble';
@@ -64,11 +64,14 @@ export default {
       nextReqMessageID: '',
       nextReqMessage: null,
       messageNickNameMap: new Map(),
+      conversationID: '',
     });
     const {dispatch} = useStore();
     const { proxy } = getCurrentInstance();
+    const route = useRoute();
+    state.conversationID = route.query.userId;
 
-    let TYPES = computed(() => {
+    const TYPES = computed(() => {
       return TIM.TYPES
     })
 
@@ -124,13 +127,12 @@ export default {
     const fetchMessageListByTim = async () => {
       try {
         const options = {
-          conversationID: 'C2C234470313520',
+          conversationID: state.conversationID,
         };
         // 如果存在有nextReq
         // if (this.nextReqMessageID) { // 续拉数据
         //   options.nextReqMessageID = this.nextReqMessageID;
         // }
-        debugger
         const messageListResponse = await imBaseState.$tim.getMessageList(options);
         console.log('22222');
         console.log('messageListResponse::', messageListResponse);
@@ -148,12 +150,9 @@ export default {
 
     const fetchMessageList = async () => {
       let messageList = [];
+      messageList = await fetchMessageListByTim();
       debugger;
-      if (!state.isTimCompleted) {
-        messageList = await fetchMessageListByTim();
-      }
       if (state.isTimCompleted && !state.isServerCompleted) {
-        debugger
         const serverMessageList = await fetchMessageListByServer();
         messageList = [...serverMessageList, ...messageList];
         state.nextReqMessageID = messageList[0] ? messageList[0].ID || null : null;
@@ -161,6 +160,7 @@ export default {
       debugger
       const newMessageList = await buildMessageNickName(messageList);
       state.messageList = [...newMessageList, ...state.messageList];
+      console.log(`state.messageList=== ${ state.messageList }`);
       await setMessageRead();
     }
 
@@ -296,7 +296,6 @@ export default {
 
 
     const bindTimEventListener = () => {
-      debugger
       imBaseState.$tim.on(TIM.EVENT.SDK_READY, onTimReady);
 
       // imBaseState.$tim.on(TIM.EVENT.MESSAGE_RECEIVED, onTimReceivedMessage);
@@ -422,6 +421,7 @@ export default {
 
     return {
       ...toRefs(state),
+      TYPES,
       onRefresh,
       onMessageItemContextmenu,
     }
