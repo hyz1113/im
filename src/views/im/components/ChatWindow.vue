@@ -24,6 +24,11 @@
           <message-face v-else-if="item.type === TYPES.MSG_FACE" :data="item"/>
           <message-not-support v-else :data="item"/>
         </message-bubble>
+<!--        <message-revoked-->
+<!--            v-else-->
+<!--            :isEdit="item.type === TYPES.MSG_TEXT"-->
+<!--            :data="item"-->
+<!--        />-->
       </div>
     </van-list>
   </div>
@@ -44,6 +49,7 @@ import MessageImage from './messages/image';
 import MessageAudio from './messages/audio';
 import MessageFace from './messages/face';
 import MessageNotSupport from './messages/notSupport';
+import MessageRevoked from './messages/revoked';
 import { IMBase } from '../mixins/base';
 
 export default {
@@ -436,6 +442,7 @@ export default {
     MessageFace,
     MessageNotSupport,
     MessageBubble,
+    MessageRevoked,
     List,
   },
 }
