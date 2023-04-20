@@ -33,7 +33,7 @@
 
 <script>
 import {useStore} from 'vuex'
-import TIM from 'tim-js-sdk';
+import TIM from "tim-js-sdk";
 import TIMUploadPlugin from 'tim-upload-plugin';
 import {defineComponent, reactive, toRefs, getCurrentInstance, computed, onMounted, onUnmounted} from 'vue';
 import {im} from '@/api/im/api';
@@ -50,7 +50,8 @@ import { IMBase } from '../mixins/base';
 export default {
   setup() {
     const state = reactive({
-      SDKAppID: null, // 接入时需要将0替换为您的即时通信 IM 应用的 SDKAppID
+      isInitTim: false,
+      isBindTimEvent: false,
       ntim: null,
       finished: false,
       loading: false,
@@ -80,7 +81,9 @@ export default {
         createTencentTim,
         loginTim,
         loginOutTim,
-        checkUserCanUseIm } = IMBase();
+        fetchTimInfo,
+        fetchTimAccountFriends,
+   } = IMBase();
 
     const startTimLoginLoop = async () => {
       if (!imBaseState.$tim) {
@@ -89,7 +92,8 @@ export default {
       if (imBaseState.timCommonAccounts.length) {
         await loginOutTim();
         imBaseState.currentLoginCommonAccount = imBaseState.timCommonAccounts[imBaseState.currentLoginIndex] || null;
-        await loginTim();
+        debugger
+        await loginTim(imBaseState.currentLoginCommonAccount.tencentUserId, imBaseState.currentLoginCommonAccount.sign);
         if (imBaseState.timCommonAccounts.length > 1) {
           imBaseState.currentLoginIndex += 1;
           if (imBaseState.currentLoginIndex >= imBaseState.timCommonAccounts.length) {
@@ -118,17 +122,17 @@ export default {
     }
 
     const fetchMessageListByTim = async () => {
-      debugger
       try {
         const options = {
-          conversationID: 'C2C30071520',
+          conversationID: 'C2C234470313520',
         };
         // 如果存在有nextReq
         // if (this.nextReqMessageID) { // 续拉数据
         //   options.nextReqMessageID = this.nextReqMessageID;
         // }
-        const messageListResponse = await state.$tim.getMessageList(options);
         debugger
+        const messageListResponse = await imBaseState.$tim.getMessageList(options);
+        console.log('22222');
         console.log('messageListResponse::', messageListResponse);
         if (messageListResponse.code === 0 && messageListResponse.data) {
           const msgListData = messageListResponse.data;
@@ -144,14 +148,17 @@ export default {
 
     const fetchMessageList = async () => {
       let messageList = [];
+      debugger;
       if (!state.isTimCompleted) {
         messageList = await fetchMessageListByTim();
       }
       if (state.isTimCompleted && !state.isServerCompleted) {
+        debugger
         const serverMessageList = await fetchMessageListByServer();
         messageList = [...serverMessageList, ...messageList];
         state.nextReqMessageID = messageList[0] ? messageList[0].ID || null : null;
       }
+      debugger
       const newMessageList = await buildMessageNickName(messageList);
       state.messageList = [...newMessageList, ...state.messageList];
       await setMessageRead();
@@ -286,23 +293,29 @@ export default {
       // }
     };
 
+
+
+    const bindTimEventListener = () => {
+      debugger
+      imBaseState.$tim.on(TIM.EVENT.SDK_READY, onTimReady);
+
+      // imBaseState.$tim.on(TIM.EVENT.MESSAGE_RECEIVED, onTimReceivedMessage);
+      // imBaseState.$tim.on(TIM.EVENT.MESSAGE_MODIFIED, onTimModifiedMessage);
+      // imBaseState.$tim.on(TIM.EVENT.MESSAGE_REVOKED, onTimRevokedMessage);
+      // imBaseState.$tim.on(TIM.EVENT.MESSAGE_READ_BY_PEER, onTimMessageReadByPeer);
+    };
+
     const onTimReceivedMessage = async (event) => {
       const messages = Array.isArray(event.data) ? event.data : [];
       if (messages.length) {
-        let messageList = messages.filter(item => item.conversationID === this.conversationId);
+        // this.conversationId
+        let messageList = messages.filter(item => item.conversationID === 'C2C30071520');
         messageList = await buildMessageNickName(messageList);
         messageList.forEach(item => {
           state.messageList.push(item);
         });
       }
       updateUnreadMessageCount();
-    };
-
-    const bindTimEventListener = () => {
-      state.$tim.on(TIM.EVENT.MESSAGE_RECEIVED, onTimReceivedMessage, this);
-      state.$tim.on(TIM.EVENT.MESSAGE_MODIFIED, onTimModifiedMessage, this);
-      state.$tim.on(TIM.EVENT.MESSAGE_REVOKED, onTimRevokedMessage, this);
-      state.$tim.on(TIM.EVENT.MESSAGE_READ_BY_PEER, onTimMessageReadByPeer, this);
     };
 
     const onTimRevokedMessage = (event) => {
@@ -342,43 +355,70 @@ export default {
     };
 
     const unBindTimeEventListener = () => {
-      state.$tim.off(TIM.EVENT.MESSAGE_RECEIVED, onTimReceivedMessage);
-      state.$tim.off(TIM.EVENT.MESSAGE_MODIFIED, onTimModifiedMessage);
-      state.$tim.off(TIM.EVENT.MESSAGE_REVOKED, onTimRevokedMessage);
-      state.$tim.off(TIM.EVENT.MESSAGE_READ_BY_PEER, onTimMessageReadByPeer);
+      imBaseState.$tim.off(TIM.EVENT.MESSAGE_RECEIVED, onTimReceivedMessage);
+      imBaseState.$tim.off(TIM.EVENT.MESSAGE_MODIFIED, onTimModifiedMessage);
+      imBaseState.$tim.off(TIM.EVENT.MESSAGE_REVOKED, onTimRevokedMessage);
+      imBaseState.$tim.off(TIM.EVENT.MESSAGE_READ_BY_PEER, onTimMessageReadByPeer);
+    };
+
+    // 初始化腾讯的tim相关的功能
+    const initTencentTim = async() => {
+      if (!state.isInitTim) {
+        state.isInitTim = await createTencentTim();
+      }
+      if (!state.isBindTimEvent && imBaseState.$tim) {
+        bindTimEventListener();
+        state.isBindTimEvent = true;
+      }
     };
 
     /**
-     * 请求后端的接口进行获取IM的的appId
+     * 登出系统
      * */
-    const getIMAppId = () => {
-      im.getTimAppId()
-          .then((res) => {
-            state.SDKAppID = res.data || null;
-            createTencentTim(); // 初始化 实例对象
-          })
-          .catch((err) => {
-            console.log(err);
-          })
-    }
+   const logoutTim = () => {
+      return new Promise(resolve => {
+        imBaseState.$tim.logout().finally(() => {
+          resolve();
+        });
+      });
+    };
 
-    getIMAppId();
-    onMounted( async () => {
-      await checkUserCanUseIm();
-      if (imBaseState.canUseIm) {
-        await createTencentTim();
-        await bindTimEventListener();
+    // 当tim进行初始化的时候进行的操作
+    const onTimReady = async () => {
+      try {
+        const friendList = await fetchTimAccountFriends();
+        if (imBaseState.commonAccountInfo && imBaseState.commonAccountInfo.customerTencentUserId) {
+          const timUserId = `${imBaseState.commonAccountInfo.customerTencentUserId}`;
+          // @ts-ignore
+          const customerInfoOfTim = friendList.find(item => item.userID === timUserId);
+          imBaseState.customerTimInfo = customerInfoOfTim || null;
+        }
+        if (imBaseState.customerTimInfo) {
+          console.log('建联了=====');
+          await fetchMessageList();
+        } else {
+          console.log('获取腾讯IM建联关系失败！');
+        }
+      } catch (ex) {
+        console.log('queryResult', false, ex.message || 'TIM 初始化错误');
       }
-      debugger;
-      await fetchMessageList();
+    };
+
+
+    onMounted( async () => {
+      // await logoutTim(); // 先登出
+      await fetchTimInfo();
+      await initTencentTim();
+      await loginTim();
     })
 
-    onUnmounted(async () => {
-      await stopTimLoginLoop();
-      bindTimEventListener();
-      await imBaseState.$tim.destroy();
-      imBaseState.$tim = null;
-    })
+    // onUnmounted(async () => {
+    //   debugger
+    //   await stopTimLoginLoop();
+    //   bindTimEventListener();
+    //   await imBaseState.$tim.destroy();
+    //   imBaseState.$tim = null;
+    // })
 
     return {
       ...toRefs(state),

@@ -7,6 +7,9 @@ export const im = {
     getHistoryMessageByServer: (params: Object) => Request.get('/kol/crmIm/getHistoryMsg', {...params}),
     recallMessage: (params: Object) => Request.get('/kol/crmIm/recall', {...params}),
     checkUserIsImGray: () => Request.get('/kol/crmIm/gray'),
+    getCustomerByTMI: (p: { accounts: string }) => Request.get('/kol/crmIm/query/uid'),
+    getUserImAccounts: (params: Object) => Request.get('/kol/crmIm/admin/uid', { ...params }),
+    getCustomerImInfo: (params: Object) => Request.get('/kol/crmIm/query/relation', { ...params }),
 }
 
 export default {
