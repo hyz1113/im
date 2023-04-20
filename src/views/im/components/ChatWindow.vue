@@ -1,6 +1,5 @@
 <template>
   <div>
-    <div>{{ SDKAppID }} -- {{ ntim }}</div>
     <van-list
         v-model:loading="loading"
         :finished="finished"
@@ -65,6 +64,7 @@ export default {
       nextReqMessage: null,
       messageNickNameMap: new Map(),
       conversationID: '',
+      customerName: '',
     });
     const {dispatch} = useStore();
     const { proxy } = getCurrentInstance();
@@ -130,9 +130,9 @@ export default {
           conversationID: state.conversationID,
         };
         // 如果存在有nextReq
-        // if (this.nextReqMessageID) { // 续拉数据
-        //   options.nextReqMessageID = this.nextReqMessageID;
-        // }
+        if (state.nextReqMessageID) { // 续拉数据
+          options.nextReqMessageID = state.nextReqMessageID;
+        }
         const messageListResponse = await imBaseState.$tim.getMessageList(options);
         console.log('22222');
         console.log('messageListResponse::', messageListResponse);
@@ -423,6 +423,7 @@ export default {
       ...toRefs(state),
       TYPES,
       onRefresh,
+      imBaseState,
       onMessageItemContextmenu,
     }
   },

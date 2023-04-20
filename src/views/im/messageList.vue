@@ -85,7 +85,7 @@ export default {
     const togoDetail = (data) => {
       router.push({
         path: '/chat',
-        query: { userId: data.uid }
+        query: { userId: data.uid, cname: data.customerName }
       });
     }
 
