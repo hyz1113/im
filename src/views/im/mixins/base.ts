@@ -2,6 +2,7 @@ import TIM from "tim-js-sdk/tim-js-friendship";
 import TIMUploadPlugin from "tim-upload-plugin";
 import {im} from '@/api/im/api';
 import {reactive, toRefs} from "vue";
+import {useRoute} from "vue-router";
 
 export function IMBase() {
     const imBaseState = reactive({
@@ -15,6 +16,9 @@ export function IMBase() {
         currentLoginIndex: 0,
         commonAccountInfo: false, // 销售人员的相关信息
     })
+
+    const route = useRoute();
+    const conversationID = route.query.userId;
 
     const checkUserCanUseIm = async () => {
         try {
@@ -75,7 +79,7 @@ export function IMBase() {
         const params = {
             customerId: 0,
             // uid: this.uid,
-            uid: '12358', // 当前的客户uid
+            uid: conversationID, // 当前的客户uid
             leadsId: 0
         };
         const res = await im.getCustomerImInfo(params);

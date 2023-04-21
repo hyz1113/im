@@ -51,6 +51,7 @@ import MessageFace from './messages/face';
 import MessageNotSupport from './messages/notSupport';
 import MessageRevoked from './messages/revoked';
 import { IMBase } from '../mixins/base';
+import mepal from '@/utils/mepal';
 
 export default {
   setup() {
