@@ -66,6 +66,7 @@ export default {
         color: #333333;
     }
     ::v-deep .text-box {
+       text-align: left;
         b {
             color: red;
         }
