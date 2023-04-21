@@ -78,7 +78,6 @@ export function IMBase() {
     const fetchTimInfo = async () => {
         const params = {
             customerId: 0,
-            // uid: this.uid,
             uid: conversationID, // 当前的客户uid
             leadsId: 0
         };

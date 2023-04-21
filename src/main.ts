@@ -7,7 +7,10 @@ import {
  Image as VanImage,
  Cell,
  CellGroup,
- PullRefresh
+ PullRefresh,
+ Icon,
+ Field,
+ Button,
 } from 'vant';
 import Vconsole from '@/utils/vconsole';
 import 'vant/lib/index.css';
@@ -22,5 +25,8 @@ const app = createApp(App)
     .use(Cell)
     .use(CellGroup)
     .use(PullRefresh)
+    .use(Button)
+    .use(Icon)
+    .use(Field)
     .use(Vconsole)
     .mount('#app')

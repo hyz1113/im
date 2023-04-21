@@ -1,6 +1,6 @@
 <template>
-  <div>
-    {{ conversationID }}====== {{ customerName }}
+  <div class="chat">
+    <header class="header">{{ conversationID }}====== {{ customerName }}</header>
     <im-chat-main />
   </div>
 </template>
@@ -31,5 +31,12 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.chat {
+  background: #f7f8fa;
+  height: 100vh;
 
+  .header {
+    padding: 10px;
+  }
+}
 </style>

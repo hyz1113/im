@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="chat-window">
     <van-list
         v-model:loading="loading"
         :finished="finished"
@@ -24,12 +24,14 @@
           <message-face v-else-if="item.type === TYPES.MSG_FACE" :data="item"/>
           <message-not-support v-else :data="item"/>
         </message-bubble>
+
 <!--        <message-revoked-->
 <!--            v-else-->
 <!--            :isEdit="item.type === TYPES.MSG_TEXT"-->
 <!--            :data="item"-->
 <!--        />-->
       </div>
+      <message-send :messageList="messageList" />
     </van-list>
   </div>
 </template>
@@ -50,7 +52,9 @@ import MessageAudio from './messages/audio';
 import MessageFace from './messages/face';
 import MessageNotSupport from './messages/notSupport';
 import MessageRevoked from './messages/revoked';
+import MessageSend from "./messages/send";
 import { IMBase } from '../mixins/base';
+
 import mepal from '@/utils/mepal';
 
 export default {
@@ -102,7 +106,6 @@ export default {
       if (imBaseState.timCommonAccounts.length) {
         await loginOutTim();
         imBaseState.currentLoginCommonAccount = imBaseState.timCommonAccounts[imBaseState.currentLoginIndex] || null;
-        debugger
         await loginTim(imBaseState.currentLoginCommonAccount.tencentUserId, imBaseState.currentLoginCommonAccount.sign);
         if (imBaseState.timCommonAccounts.length > 1) {
           imBaseState.currentLoginIndex += 1;
@@ -158,13 +161,11 @@ export default {
     const fetchMessageList = async () => {
       let messageList = [];
       messageList = await fetchMessageListByTim();
-      debugger;
       if (state.isTimCompleted && !state.isServerCompleted) {
         const serverMessageList = await fetchMessageListByServer();
         messageList = [...serverMessageList, ...messageList];
         state.nextReqMessageID = messageList[0] ? messageList[0].ID || null : null;
       }
-      debugger
       const newMessageList = await buildMessageNickName(messageList);
       state.messageList = [...newMessageList, ...state.messageList];
       console.log(`state.messageList=== ${ state.messageList }`);
@@ -444,11 +445,14 @@ export default {
     MessageNotSupport,
     MessageBubble,
     MessageRevoked,
+    MessageSend,
     List,
   },
 }
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+.chat-window {
+  background: #f7f8fa;
+}
 </style>
