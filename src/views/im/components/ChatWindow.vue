@@ -31,7 +31,10 @@
 <!--            :data="item"-->
 <!--        />-->
       </div>
-      <message-send :messageList="messageList" />
+      <message-send
+          :messageList="messageList"
+          @sendTextMessage="sendTextMessage"
+      />
     </van-list>
   </div>
 </template>
@@ -54,15 +57,13 @@ import MessageNotSupport from './messages/notSupport';
 import MessageRevoked from './messages/revoked';
 import MessageSend from "./messages/send";
 import { IMBase } from '../mixins/base';
-
-import mepal from '@/utils/mepal';
+import Mepal from '@/utils/mepal';
 
 export default {
   setup() {
     const state = reactive({
       isInitTim: false,
       isBindTimEvent: false,
-      ntim: null,
       finished: false,
       loading: false,
       messageList: [],
@@ -76,11 +77,14 @@ export default {
       messageNickNameMap: new Map(),
       conversationID: '',
       customerName: '',
+      token: '', // appToken
     });
     const {dispatch} = useStore();
     const { proxy } = getCurrentInstance();
     const route = useRoute();
     state.conversationID = route.query.userId;
+    state.token = Mepal.getToken();
+    console.log('token===' + state.token);
 
     const TYPES = computed(() => {
       return TIM.TYPES
@@ -291,18 +295,6 @@ export default {
       }
     };
 
-
-    const setMessageRead = async () => {
-      // if (+this.userInfo.userId === +this.commonAccountInfo.adminUserId) {
-      //   await state.$tim.setMessageRead({
-      //     // conversationID: this.conversationId
-      //     conversationID: 'C2C30071520'
-      //   });
-      // }
-    };
-
-
-
     const bindTimEventListener = () => {
       imBaseState.$tim.on(TIM.EVENT.SDK_READY, onTimReady);
 
@@ -411,6 +403,52 @@ export default {
       }
     };
 
+    // 发送消息部分 ------------------------------
+
+    const sendMessage = async (message) => {
+      message.senderUserId = '14815' || '' // 预定从 列表里-- adminUserID获取;
+      await setMessageSenderInfo(message, true);
+      state.messageList.push(message);
+      try {
+        const imResponse = await imBaseState.$tim.sendMessage(message);
+        const index = state.messageList.findIndex(item => item.ID === imResponse.data.message.ID)
+        const newMessage = imResponse.data.message;
+        newMessage.senderUserId = '14815' || '' // 预定从 列表里-- adminUserID获取;
+        await setMessageSenderInfo(newMessage);
+        if (index > -1) {
+          state.messageList.splice(index, 1, newMessage);
+        }
+      } catch (error) {
+        alert( error.message || '发送失败');
+      }
+    };
+
+    const buildMessageOptions = (content, type, callback = () => ({})) => {
+      const options = {
+        to: '30071520', // （必须字符串） 预定从 列表里--  customerTencentUserId
+        conversationType: 'C2C',
+        payload: content,
+        needReadReceipt: true,
+        cloudCustomData: JSON.stringify({
+          userId: '14815' || '' // 预定从 列表里-- adminUserID获取
+        }),
+      };
+      if (type === 'file' && typeof callback === 'function') {
+        options.onProgress = callback;
+      }
+      return options;
+    };
+
+    const sendTextMessage = async (msg) => {
+      const text = msg.trim();
+      const options = buildMessageOptions({ text: text }, 'text');
+      debugger
+      const message = imBaseState.$tim.createTextMessage(options);
+      debugger
+      message.progress = 0;
+      await sendMessage(message);
+    }
+
 
     onMounted( async () => {
       // await logoutTim(); // 先登出
@@ -433,6 +471,7 @@ export default {
       onRefresh,
       imBaseState,
       onMessageItemContextmenu,
+      sendTextMessage,
     }
   },
   components: {

@@ -12,17 +12,10 @@
         <template #button>
           <van-icon name="photo-o" @click="onChooseImageBtnClick" size="30"/>
           <van-icon name="add-o" @click="onChooseImageBtnClick" size="30"/>
-          <van-button size="small" type="primary">发送</van-button>
+          <van-button size="small" type="primary" @click="noticeMessage">发送</van-button>
         </template>
       </van-field>
     </van-cell-group>
-    <!--    <div class="input-ctr">-->
-    <!--      <div class="right">-->
-    <!--        <el-button type="primary" @click="onSendBtnClick">-->
-    <!--          发送-->
-    <!--        </el-button>-->
-    <!--      </div>-->
-    <!--    </div>-->
   </div>
 </template>
 
@@ -32,14 +25,15 @@ import {IMBase} from '../../mixins/base';
 
 export default {
   name: "MessageInput",
-  setup(props) {
+  setup(props, ctx) {
     const state = {
       sendImageFile: null,
       messageValue: '',
+      userInfo: '',
     };
+
     const onChooseImageBtnClick = () => {
     }
-    const messageList = toRef(props, 'messageList');
 
     const onImageFileChange = (event) => {
       const files = event.target.files;
@@ -49,81 +43,25 @@ export default {
       refreshImageFile();
     };
 
-    const onInputPaste = () => {
+    // const onFileMessageProcess = (progress, message) => {
+    //   const index = messageList.findIndex(item => item.ID === message.ID);
+    //   if (index > -1) {
+    //     const tempMessage = messageList[index];
+    //     const newMessage = {
+    //       ...tempMessage,
+    //       progress: progress
+    //     };
+    //     messageList.splice(index, 1, newMessage)
+    //   }
+    // };
 
-    };
-
-    const onInputKeyDown = (event) => {
-      // const widthFunctionKey = event.altKey || event.ctrlKey || event.metaKey || event.shiftKey;
-      // if (event.key === 'Enter' && !this.sendBtnDisabled && !widthFunctionKey) {
-      //   event.preventDefault();
-      //   sendTextMessage();
-      //   setTimeout(() => {
-      //     state.messageValue = '';
-      //   });
-      // }
-    };
-
-    const sendTextMessage = () => {
-    };
-
-    const onSendBtnClick = () => {
-      sendTextMessage();
-    };
-
-    const buildMessageOptions = (content, type, callback = () => ({})) => {
-      const options = {
-        to: '',
-        conversationType: 'C2C',
-        payload: content,
-        needReadReceipt: true,
-        cloudCustomData: JSON.stringify({
-          userId: this.userInfo.userId || ''
-        }),
-      };
-      if (type === 'file' && typeof callback === 'function') {
-        options.onProgress = callback;
-      }
-      return options;
-    };
-
-    const onFileMessageProcess = (progress, message) => {
-      const index = this.messageList.findIndex(item => item.ID === message.ID);
-      if (index > -1) {
-        const tempMessage = this.messageList[index];
-        const newMessage = {
-          ...tempMessage,
-          progress: progress
-        };
-        this.messageList.splice(index, 1, newMessage)
-      }
-    };
-
-    const sendMessage = async (message) => {
-      //   message.senderUserId = this.userInfo.userId;
-      //   await setMessageSenderInfo(message, true);
-      //   this.messageList.push(message);
-      //   try {
-      //     const imResponse = await this.$tim.sendMessage(message);
-      //     const index = this.messageList.findIndex(item => item.ID === imResponse.data.message.ID)
-      //     const newMessage = imResponse.data.message;
-      //     newMessage.senderUserId = this.userInfo.userId;
-      //     await setMessageSenderInfo(newMessage);
-      //     if (index > -1) {
-      //       this.messageList.splice(index, 1, newMessage);
-      //     }
-      //     await setMessageRead();
-      //   } catch (error) {
-      //     // this.$message.error( error.message || this.$tt('{#发送失败!#}'));
-      //   }
+    const noticeMessage = async (message) => {
+      ctx.emit('sendTextMessage', state.messageValue);
+      state.messageValue = '';
     };
 
     const sendImageMessage = async (image) => {
-      const options = buildMessageOptions({file: image}, 'file', (progress) => {
-        onFileMessageProcess(progress, message);
-      });
-      const message = IMBase.$tim.createImageMessage(options);
-      await sendMessage(message);
+
     };
 
     const refreshImageFile = () => {
@@ -135,12 +73,9 @@ export default {
 
     return {
       ...toRefs(state),
-      messageList,
       onChooseImageBtnClick,
       onImageFileChange,
-      onInputKeyDown,
-      onInputPaste,
-      onSendBtnClick,
+      noticeMessage,
     }
   },
 }
