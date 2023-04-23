@@ -4,6 +4,7 @@ module.exports = defineConfig({
   devServer: {
     historyApiFallback: true,
     allowedHosts: 'all',
+    port: 8081,
     proxy: {
       '/kol': {
         // 由于我们上面在请求头里有添加 gatwat 所以能拦截
