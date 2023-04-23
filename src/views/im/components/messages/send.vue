@@ -13,7 +13,7 @@
           <van-uploader>
             <van-icon name="photo-o" size="30"/>
           </van-uploader>
-          <van-icon name="add-o" @click="callKeyboard" size="30"/>
+          <!--  <van-icon name="add-o" @click="callKeyboard" size="30"/>-->
           <van-button size="small" type="primary" @click="noticeMessage">发送</van-button>
         </template>
       </van-field>
