@@ -10,8 +10,8 @@
           type="textarea"
       >
         <template #button>
-          <van-icon name="photo-o" @click="onChooseImageBtnClick" size="30"/>
-          <van-icon name="add-o" @click="onChooseImageBtnClick" size="30"/>
+          <van-uploader :after-read="onChooseImageBtnClick" />
+          <van-icon name="add-o" @click="callKeyboard" size="30"/>
           <van-button size="small" type="primary" @click="noticeMessage">发送</van-button>
         </template>
       </van-field>
@@ -22,6 +22,7 @@
 <script>
 import {toRefs, nextTick, toRef} from "vue";
 import {IMBase} from '../../mixins/base';
+import Mepal from "@/utils/mepal";
 
 export default {
   name: "MessageInput",
@@ -42,6 +43,14 @@ export default {
       }
       refreshImageFile();
     };
+
+    /*
+    * 唤起键盘
+    * */
+    const callKeyboard = () => {
+      alert('111');
+      Mepal.uploadFile();
+    }
 
     // const onFileMessageProcess = (progress, message) => {
     //   const index = messageList.findIndex(item => item.ID === message.ID);
@@ -76,6 +85,7 @@ export default {
       onChooseImageBtnClick,
       onImageFileChange,
       noticeMessage,
+      callKeyboard,
     }
   },
 }

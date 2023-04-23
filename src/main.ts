@@ -11,6 +11,7 @@ import {
  Icon,
  Field,
  Button,
+ Uploader,
 } from 'vant';
 import Vconsole from '@/utils/vconsole';
 import 'vant/lib/index.css';
@@ -25,6 +26,7 @@ const app = createApp(App)
     .use(Cell)
     .use(CellGroup)
     .use(PullRefresh)
+    .use(Uploader)
     .use(Button)
     .use(Icon)
     .use(Field)
