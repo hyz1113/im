@@ -493,5 +493,6 @@ export default {
 <style scoped lang="scss">
 .chat-window {
   background: #f7f8fa;
+  padding-bottom: 80px;
 }
 </style>

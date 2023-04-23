@@ -119,11 +119,11 @@ export default {
 }
 
 .content {
-    // display: display: inline;;
     width: auto;
 }
 .message-area {
-    max-width: calc(100% - 124px);
+    margin-top: 10px;
+    max-width: calc(100% - 105px);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -132,11 +132,11 @@ export default {
     .send-info {
         display: flex;
         width: 100%;
-        font-size: 12px;
+        font-size: 13px;
         margin-left: 4px;
         margin-right: 4px;
         margin-bottom: 4px;
-        color: #888888;
+        color: #000;
         span {
             padding: 0 4px;
         }

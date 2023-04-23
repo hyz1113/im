@@ -57,13 +57,14 @@ export default {
 .message-text {
     height: auto;
     line-height: 20px;
+    margin: 5px;
     &,
     &div {
-        display: inline-block;
+        display: flex;
         vertical-align: baseline;
         font-size: 14px;
-        line-height: 20px;
-        color: #333333;
+        line-height: 25px;
+        color: #000;
     }
     ::v-deep .text-box {
        text-align: left;

@@ -1,6 +1,5 @@
 <template>
   <div class="chat">
-    <header class="header">{{ conversationID }}====== {{ customerName }}</header>
     <im-chat-main />
   </div>
 </template>
@@ -9,6 +8,8 @@
 import ImChatMain from './components/ChatWindow.vue';
 import {reactive, toRefs} from "vue";
 import { useRoute } from 'vue-router';
+import Mepal from "@/utils/mepal";
+
 export default {
   name: "chat",
   components: {
@@ -18,10 +19,14 @@ export default {
     const state = reactive({
       conversationID: '',
       customerName: '',
+      pageTitle: ''
     });
     const route = useRoute();
     state.conversationID = route.query.userId;
     state.customerName = route.query.cname;
+    state.pageTitle =  `${state.conversationID}${state.customerName}`
+    Mepal.setTitle(state.pageTitle);
+    console.log(`页面是 === ${state.pageTitle}`);
 
     return {
       ...toRefs(state)

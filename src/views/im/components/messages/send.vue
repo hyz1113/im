@@ -10,7 +10,9 @@
           type="textarea"
       >
         <template #button>
-          <van-uploader :after-read="onChooseImageBtnClick" />
+          <van-uploader>
+            <van-icon name="photo-o" size="30"/>
+          </van-uploader>
           <van-icon name="add-o" @click="callKeyboard" size="30"/>
           <van-button size="small" type="primary" @click="noticeMessage">发送</van-button>
         </template>
@@ -94,8 +96,8 @@ export default {
 <style lang="scss" scoped>
 .message-input {
   position: fixed;
-  bottom: 10px;
   left: 0;
+  bottom: 0;
   display: flex;
   width: 100%;
 
@@ -104,7 +106,6 @@ export default {
   }
 
   .van-field {
-    padding: 5px 10px 5px 20px;
 
     ::v-deep .van-field__button {
       display: flex;
@@ -112,6 +113,10 @@ export default {
       .van-icon {
         margin: 0 5px;
       }
+    }
+
+    .van-uploader {
+
     }
   }
 }
