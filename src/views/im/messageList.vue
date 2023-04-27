@@ -54,7 +54,7 @@ export default {
       Mepal.getToken().then(res => {
         console.log('token ==== ', res);
         // localStorage.setItem('Admin-Token', res);
-        localStorage.setItem('Admin-Token', 'ST-739-guryJZkNunw0Jl9yXYy92kcEmvAiam-cas-6dd9bdf7b6-ch9gk');
+        localStorage.setItem('Admin-Token', 'b1b7af5327de407dbf597c401b9c81a1');
       });
     }
 
@@ -96,6 +96,9 @@ export default {
       }
     }
 
+    /*
+    * 获取单一消息内容
+    * */
     const getMsgContent = (latestMsg, data) => {
       let latestMsgData = latestMsg;
       if (typeof latestMsg === 'string') {
