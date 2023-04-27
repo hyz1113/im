@@ -12,6 +12,9 @@ export const im = {
     getCustomerImInfo: (params: Object) => get('/kol/crmIm/query/relation', { ...params }),
     getMySessionH5List: (params: Object) => get('/kol/crmIm/getMySessionH5List', { ...params }),
 
+    /*获取移动端登录*/
+    gotoLoginMepal: (params: Object) => post('/kol/authorization/mepal_login', { ...params }),
+    /*获取token*/
     getToken: () => get('/kol/authorization/getLoginToken'),
 }
 
