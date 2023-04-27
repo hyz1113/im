@@ -30,12 +30,6 @@ export default {
                 return this.data.payload.imageInfoArray[1];
             }
         },
-        srcList() {
-            const previewImageInfo = this.data.payload.imageInfoArray[0];
-            return [
-                previewImageInfo.imageUrl
-            ];
-        },
         imageStyle() {
             return {
                 width: `${this.displayImageInfo.width}px`,
@@ -43,16 +37,6 @@ export default {
             }
         },
     },
-    watch: {
-        data: {
-            immediate: true,
-            handler() {
-                if (Array.isArray(this.data)) {
-
-                }
-            }
-        }
-    }
 }
 </script>
 
