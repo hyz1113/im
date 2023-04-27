@@ -21,10 +21,11 @@
 </template>
 
 <script>
-import {toRefs, nextTick, toRef, computed} from "vue";
+import {toRefs, nextTick, toRef, computed, getCurrentInstance} from "vue";
 import {IMBase, createTencentTim} from '../../mixins/base';
 import Mepal from "@/utils/mepal";
 import {showToast} from "vant";
+import imgAddWaterRark from "@/mixins/imgAddWaterRark";
 
 export default {
   name: "MessageInput",
@@ -39,15 +40,17 @@ export default {
     const messageList = toRef(props, 'messageList');
     const customerTimId = toRef(props, 'customerTimId');
 
+    const { proxy } = getCurrentInstance();
+
     const onImageFileChange = (files) => {
-      debugger
       if (files) {
-        // const { email = '', realname = '' } = this.userInfo;
-        // const text = `${email}_${realname}`;
-        ctx.emit('sendImageMessage', files);
-        // this.$imgWaterRark(files[0], text).then(res=> {
-        //
-        // });
+        const email = 'lallal@qq.com';
+        const realname = 'f888888';
+        const text = `${email}_${realname}`;
+
+        imgAddWaterRark(files, text).then(res=> {
+            ctx.emit('sendImageMessage', res);
+        });
       }
       refreshImageFile();
     };
