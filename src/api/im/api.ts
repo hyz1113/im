@@ -10,6 +10,8 @@ export const im = {
     getCustomerByTMI: (p: { accounts: string }) => get('/kol/crmIm/query/uid'),
     getUserImAccounts: (params: Object) => get('/kol/crmIm/admin/uid', { ...params }),
     getCustomerImInfo: (params: Object) => get('/kol/crmIm/query/relation', { ...params }),
+    getMySessionH5List: (params: Object) => get('/kol/crmIm/getMySessionH5List', { ...params }),
+
     getToken: () => get('/kol/authorization/getLoginToken'),
 }
 

@@ -18,13 +18,13 @@
               />
               <div class="text m-l-10">
                   <div>{{ data.uid }}｜{{ data.customerName }}</div>
-                  <div>{{ data.latestMsg }}</div>
+                  <div>{{ getMsgContent(data.latestMsg, data) }}</div>
               </div>
             </div>
           </template>
           <!-- 使用 right-icon 插槽来自定义右侧图标 -->
           <template #right-icon>
-            <time>{{ data.latestMsgTime }}</time>
+            <time>{{ formatLastMsgTime(data.latestMsgTime) }}</time>
           </template>
         </van-cell>
       </van-cell-group>
@@ -34,58 +34,93 @@
 </template>
 
 <script>
-import { reactive, toRefs } from 'vue';
+import {computed, onMounted, reactive, toRefs} from 'vue';
 import { useRouter } from 'vue-router';
 import Mepal from "@/utils/mepal";
+import {im} from "@/api/im/api";
+import moment from 'moment';
+
 export default {
   name: "messageList",
   setup() {
     const state = reactive({
       loading: false,
       count: 0,
-      list: [
-        {
-          customerName: "423424",
-          latestMsg: '3333',
-          latestMsgTime: 1679994123,
-          latestMsgUid: "41054496",
-          uid: "C2C234470313520",
-        },
-        {
-          customerName: "23",
-          latestMsg: '3333',
-          latestMsgTime: 1679994123,
-          latestMsgUid: "41054496",
-          uid: "4324",
-        },
-        {
-          customerName: "23",
-          latestMsg: '3333',
-          latestMsgTime: 1679994123,
-          latestMsgUid: "41054496",
-          uid: "4324",
-        },
-        {
-          customerName: "23",
-          latestMsg: '3333',
-          latestMsgTime: 1679994123,
-          latestMsgUid: "41054496",
-          uid: "4324",
-        }
-      ]
+      list: []
     })
     const router = useRouter();
 
     const siteToken = () => {
       Mepal.getToken().then(res => {
         console.log('token ==== ', res);
-        localStorage.setItem('Admin-Token', res);
+        // localStorage.setItem('Admin-Token', res);
+        localStorage.setItem('Admin-Token', 'ST-739-guryJZkNunw0Jl9yXYy92kcEmvAiam-cas-6dd9bdf7b6-ch9gk');
       });
+    }
 
+    /*
+    * 显示的消息类型
+    * */
+    const timMessageTypes = {
+      TEXT: 'TIMTextElem',
+      IMAGE: 'TIMImageElem'
+    };
+
+    /*
+    * 获取列表数据
+    * */
+    const getList = async () => {
+      const res = await im.getMySessionH5List();
+      if(res) {
+        state.list = res.data;
+      }
     }
 
     const onRefresh = () => {
       state.count += 1;
+    }
+
+    /*
+    * 格式化时间
+    * */
+    const formatLastMsgTime = (time) => {
+      if (time) {
+        const latestMsgTime = moment(time * 1000);
+        if (latestMsgTime.isSame(moment(), 'day')) {
+          return latestMsgTime.format('HH:mm:ss');
+        } else if(latestMsgTime.isSame(moment().subtract(1, 'day'), 'day')) {
+          return "昨天"
+        } else {
+          return latestMsgTime.format('YYYY/MM/DD');
+        }
+      }
+    }
+
+    const getMsgContent = (latestMsg, data) => {
+      let latestMsgData = latestMsg;
+      if (typeof latestMsg === 'string') {
+        try {
+          latestMsg = JSON.parse(latestMsg)
+          if (Array.isArray(latestMsg)) {
+            latestMsgData = latestMsg[0] || {};
+          } else {
+            latestMsgData = latestMsg || {};
+          }
+          latestMsgData.isRevoked = typeof data.isRevoked === 'boolean' ? data.isRevoked : latestMsgData.isRevoked || false;
+        } catch (ex) {
+          latestMsgData = {};
+        }
+      }
+      if (data.isRevoked || latestMsgData.isRevoked) {
+        return '消息已被撤回';
+      } else if (latestMsgData.msgType === timMessageTypes.TEXT) {
+        const msgContent = latestMsgData.msgContent;
+        if (msgContent) {
+          return msgContent.text || '';
+        }
+      } else if (latestMsgData.msgType === timMessageTypes.IMAGE) {
+        return `['图片']`;
+      }
     }
 
     /*
@@ -99,10 +134,16 @@ export default {
     }
 
     siteToken();
+
+    onMounted( async () => {
+      await getList();
+    })
     return {
       ...toRefs(state),
       onRefresh,
       togoDetail,
+      formatLastMsgTime,
+      getMsgContent,
     }
   },
 }
