@@ -6,6 +6,7 @@
 
 <script>
 import ImChatMain from './components/ChatWindow.vue';
+import { im } from '@/api/im/api'
 import {reactive, toRefs} from "vue";
 import { useRoute } from 'vue-router';
 import Mepal from "@/utils/mepal";
@@ -24,7 +25,7 @@ export default {
     const route = useRoute();
     state.conversationID = route.query.userId;
     state.customerName = route.query.cname;
-    state.pageTitle =  `${state.conversationID}${state.customerName}`
+    state.pageTitle = `${state.conversationID}${state.customerName}`
     Mepal.setTitle(state.pageTitle);
     console.log(`页面是 === ${state.pageTitle}`);
 

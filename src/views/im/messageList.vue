@@ -36,6 +36,7 @@
 <script>
 import { reactive, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
+import Mepal from "@/utils/mepal";
 export default {
   name: "messageList",
   setup() {
@@ -75,6 +76,14 @@ export default {
     })
     const router = useRouter();
 
+    const siteToken = () => {
+      Mepal.getToken().then(res => {
+        console.log('token ==== ', res);
+        localStorage.setItem('Admin-Token', res);
+      });
+
+    }
+
     const onRefresh = () => {
       state.count += 1;
     }
@@ -89,7 +98,7 @@ export default {
       });
     }
 
-
+    siteToken();
     return {
       ...toRefs(state),
       onRefresh,

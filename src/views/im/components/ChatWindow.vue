@@ -77,14 +77,11 @@ export default {
       messageNickNameMap: new Map(),
       conversationID: '',
       customerName: '',
-      token: '', // appToken
     });
     const {dispatch} = useStore();
     const { proxy } = getCurrentInstance();
     const route = useRoute();
     state.conversationID = route.query.userId;
-    state.token = Mepal.getToken();
-    console.log('token===' + state.token);
 
     const TYPES = computed(() => {
       return TIM.TYPES
@@ -365,9 +362,11 @@ export default {
       if (!state.isInitTim) {
         state.isInitTim = await createTencentTim();
       }
-      if (!state.isBindTimEvent && imBaseState.$tim) {
+      if (!state.isBindTimEvent && state.isInitTim) {
         bindTimEventListener();
         state.isBindTimEvent = true;
+      } else {
+        alert('暂时未能获取建联对象')
       }
     };
 
@@ -442,9 +441,9 @@ export default {
     const sendTextMessage = async (msg) => {
       const text = msg.trim();
       const options = buildMessageOptions({ text: text }, 'text');
-      debugger
+
       const message = imBaseState.$tim.createTextMessage(options);
-      debugger
+
       message.progress = 0;
       await sendMessage(message);
     }

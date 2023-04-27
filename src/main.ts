@@ -22,7 +22,7 @@ import "@/assets/styles/mixins.scss"
 import enUS from 'vant/es/locale/lang/en-US';
 
 Locale.use('en-US', enUS);
-const app = createApp(App)
+const app = createApp(App);
 
  app.use(store)
     .use(router)

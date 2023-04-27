@@ -12,7 +12,7 @@ const getLang = () => {
  * @param {Object} err 错误对象
  * @return {Object}
  */
-const error = (err:any) => ({
+const error = (err: any) => ({
     success: false,
     code: 500,
     message: '访问出错，请稍后重试',
@@ -25,7 +25,7 @@ const error = (err:any) => ({
  *
  * @param {Object}
  * @return {Object} 返回响应数据结果对象
-**/
+ **/
 const transformResponse = (res: any) => {
     const data = res.request && res.config ? res.data : res;
 
@@ -47,74 +47,51 @@ const transformResponse = (res: any) => {
     return data;
 };
 
-
-/* 实例化请求配置 */
-const instance = axios.create({
-    headers: {
-        //php 的 post 传输请求头一定要这个 不然报错 接收不到值
-        "Content-Type": "application/json;charset=UTF-8",
-        "Access-Control-Allow-Origin-Type": "*",
-        'Admin-Token': localStorage.getItem('Admin-Token') || 'ST-210-ahjMD0Jlr24nB-UtqL-tTco4W8Yiam-cas-6dd9bdf7b6-ch9gk',
-        "Accept-Language": "en-us" // TODO 根据当前页面语言传参数
-    },
-    // 请求时长
-    timeout: 1000 * 30,
-    // 请求的base地址 TODO:这块以后根据不同的模块调不同的api
-    baseURL: process.env.NODE_ENV === "test"
-        ? "http://hbg-kol-crm-gateway.global-base.tc-jp1.huobiapps.com"
-        : "http://hbg-kol-crm-gateway.global-base.tc-jp1.huobiapps.com",
-    // 表示跨域请求时是否需要使用凭证
-    withCredentials: false,
-});
-
-
 // 请求参数处理
-instance.interceptors.request.use((config:any) => {
-  config.params = {
-        ...config.params,
-    };
-  config.headers = {
-        'Accept-Language': getLang(),
+axios.interceptors.request.use((config: any) => {
+    config.headers = {
         ...config.headers,
+        "Admin-Token": localStorage.getItem('Admin-Token')
     };
     return config;
 }, (error: any) => Promise.reject(error));
 
 
 // 响应拦截器
-instance.interceptors.response.use((res: any) => transformResponse(res), (err:any) => error(err));
+axios.interceptors.response.use((res: any) => transformResponse(res), (err: any) => error(err));
 
-export class Request {
-  /**
-   * get方法
-   *
-   * @param {string} url 路径
-   * @param {Object} params 参数
-   * @param headers
-   */
-  static get = (url: string, params?: any, headers: Record<string, any> = {}) => {
-      return new Promise((resolve, reject) => {
-          axios
-              .get(url, { params })
-              .then((res:any) => {
-                  resolve(res.data);
-              })
-              .catch((err: any) => {
-                  reject(err);
-              });
-      });
-  };
 
-  static post = (url: string, params?: any, headers: Record<string, any> = {}) => {
-      return new Promise((resolve, reject) => {
-          axios
-              .post(url, { ...params }, headers)
-              .then((res: any) => {
-                  resolve(res.data);
-              })
-              .catch((err: any) => {
-                  reject(err);
-              });
-      });
-  };
+// @ts-ignore
+/**
+ * get方法
+ *
+ * @param {string} url 路径
+ * @param {Object} params 参数
+ * @param _headers
+ */
+export function get(url: string, params?: any, _headers: Record<string, any> = {}) {
+    return new Promise((resolve, reject) => {
+        axios
+            .get(url, {params})
+            .then((res: any) => {
+                resolve(res);
+            })
+            .catch((err: any) => {
+                reject(err);
+            });
+    });
 }
+
+export function post(url: string, params?: any, headers: Record<string, any> = {}) {
+    return new Promise((resolve, reject) => {
+        axios
+            .post(url, {...params}, headers)
+            .then((res: any) => {
+                resolve(res);
+            })
+            .catch((err: any) => {
+                reject(err);
+            });
+    });
+}
+
