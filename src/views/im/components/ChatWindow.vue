@@ -32,8 +32,12 @@
 <!--        />-->
       </div>
       <message-send
+          :conversation-id="conversationId"
+          :imBaseState="imBaseState"
+          :customerTimId="customerTimId"
           :messageList="messageList"
           @sendTextMessage="sendTextMessage"
+          @sendImageMessage="sendImageMessage"
       />
     </van-list>
   </div>
@@ -77,6 +81,8 @@ export default {
       messageNickNameMap: new Map(),
       conversationID: '',
       customerName: '',
+      customerTimId: '',// 存储在腾讯的用户id
+      conversationId: '',
     });
     const {dispatch} = useStore();
     const { proxy } = getCurrentInstance();
@@ -170,8 +176,17 @@ export default {
       const newMessageList = await buildMessageNickName(messageList);
       state.messageList = [...newMessageList, ...state.messageList];
       console.log(`state.messageList=== ${ state.messageList }`);
-      // await setMessageRead();
+      await setMessageRead();
     }
+
+    const setMessageRead = async () => {
+      if (+localStorage.getItem('UserId') === +customerData.ownerId) {
+        await imBaseState.$tim.setMessageRead({
+          conversationID: state.conversationId
+        });
+        updateUnreadMessageCount();
+      }
+    };
 
     const buildMessageKey = (message) => {
       return `${message.sequence}_${message.random}_${message.time}`;
@@ -391,8 +406,12 @@ export default {
           const customerInfoOfTim = friendList.find(item => item.userID === timUserId);
           imBaseState.customerTimInfo = customerInfoOfTim || null;
         }
+        console.log('====-------' + imBaseState.customerTimInfo);
         if (imBaseState.customerTimInfo) {
+          state.customerTimId = imBaseState.customerTimInfo.userID;
+          state.conversationId = state.customerTimId ? `C2C${state.customerTimId}` : null;
           console.log('建联了=====');
+          console.log('存储在腾讯的用户的id ===' + state.customerTimId);
           await fetchMessageList();
         } else {
           console.log('获取腾讯IM建联关系失败！');
@@ -405,31 +424,31 @@ export default {
     // 发送消息部分 ------------------------------
 
     const sendMessage = async (message) => {
-      message.senderUserId = '14815' || '' // 预定从 列表里-- adminUserID获取;
+      message.senderUserId = localStorage.getItem('UserId') || '' // 预定从 列表里-- adminUserID获取;
       await setMessageSenderInfo(message, true);
       state.messageList.push(message);
       try {
         const imResponse = await imBaseState.$tim.sendMessage(message);
         const index = state.messageList.findIndex(item => item.ID === imResponse.data.message.ID)
         const newMessage = imResponse.data.message;
-        newMessage.senderUserId = '14815' || '' // 预定从 列表里-- adminUserID获取;
+        newMessage.senderUserId = localStorage.getItem('UserId') || '' // 预定从 列表里-- adminUserID获取;
         await setMessageSenderInfo(newMessage);
         if (index > -1) {
           state.messageList.splice(index, 1, newMessage);
         }
       } catch (error) {
-        alert( error.message || '发送失败');
+        showToast( error.message || '发送失败');
       }
     };
 
     const buildMessageOptions = (content, type, callback = () => ({})) => {
       const options = {
-        to: '30071520', // （必须字符串） 预定从 列表里--  customerTencentUserId
+        to: state.customerTimId, // （必须字符串） 预定从 列表里--  customerTencentUserId
         conversationType: 'C2C',
         payload: content,
         needReadReceipt: true,
         cloudCustomData: JSON.stringify({
-          userId: '14815' || '' // 预定从 列表里-- adminUserID获取
+          userId: localStorage.getItem('UserId') || '' // 预定从 列表里-- adminUserID获取
         }),
       };
       if (type === 'file' && typeof callback === 'function') {
@@ -447,6 +466,29 @@ export default {
       message.progress = 0;
       await sendMessage(message);
     }
+
+    const onFileMessageProcess = (progress, message) => {
+      const index = state.messageList.findIndex(item => item.ID === message.ID);
+      if (index > -1) {
+        const tempMessage = state.messageList[index];
+        const newMessage = {
+          ...tempMessage,
+          progress: progress
+        };
+        state.messageList.splice(index, 1, newMessage )
+      }
+    };
+
+    const sendImageMessage = async (image) => {
+      const options = buildMessageOptions({ file: image }, 'file', (progress) => {
+        onFileMessageProcess(progress, message);
+      });
+      console.log(options);
+      // await createTencentTim();
+      debugger
+      const message = imBaseState.$tim.createImageMessage(options);
+      await sendMessage(message);
+    };
 
 
     onMounted( async () => {
@@ -471,6 +513,7 @@ export default {
       imBaseState,
       onMessageItemContextmenu,
       sendTextMessage,
+      sendImageMessage,
     }
   },
   components: {

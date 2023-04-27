@@ -10,10 +10,9 @@
           type="textarea"
       >
         <template #button>
-          <van-uploader>
+          <van-uploader :before-read="onImageFileChange">
             <van-icon name="photo-o" size="30"/>
           </van-uploader>
-          <!--  <van-icon name="add-o" @click="callKeyboard" size="30"/>-->
           <van-button size="small" type="primary" @click="noticeMessage">发送</van-button>
         </template>
       </van-field>
@@ -22,9 +21,10 @@
 </template>
 
 <script>
-import {toRefs, nextTick, toRef} from "vue";
-import {IMBase} from '../../mixins/base';
+import {toRefs, nextTick, toRef, computed} from "vue";
+import {IMBase, createTencentTim} from '../../mixins/base';
 import Mepal from "@/utils/mepal";
+import {showToast} from "vant";
 
 export default {
   name: "MessageInput",
@@ -33,46 +33,29 @@ export default {
       sendImageFile: null,
       messageValue: '',
       userInfo: '',
+      messageNickNameMap: new Map(),
     };
 
-    const onChooseImageBtnClick = () => {
-    }
+    const messageList = toRef(props, 'messageList');
+    const customerTimId = toRef(props, 'customerTimId');
 
-    const onImageFileChange = (event) => {
-      const files = event.target.files;
-      if (files.length) {
-        sendImageMessage(files[0]);
+    const onImageFileChange = (files) => {
+      debugger
+      if (files) {
+        // const { email = '', realname = '' } = this.userInfo;
+        // const text = `${email}_${realname}`;
+        ctx.emit('sendImageMessage', files);
+        // this.$imgWaterRark(files[0], text).then(res=> {
+        //
+        // });
       }
       refreshImageFile();
     };
 
-    /*
-    * 唤起键盘
-    * */
-    const callKeyboard = () => {
-      alert('111');
-      Mepal.uploadFile();
-    }
-
-    // const onFileMessageProcess = (progress, message) => {
-    //   const index = messageList.findIndex(item => item.ID === message.ID);
-    //   if (index > -1) {
-    //     const tempMessage = messageList[index];
-    //     const newMessage = {
-    //       ...tempMessage,
-    //       progress: progress
-    //     };
-    //     messageList.splice(index, 1, newMessage)
-    //   }
-    // };
 
     const noticeMessage = async (message) => {
       ctx.emit('sendTextMessage', state.messageValue);
       state.messageValue = '';
-    };
-
-    const sendImageMessage = async (image) => {
-
     };
 
     const refreshImageFile = () => {
@@ -84,10 +67,8 @@ export default {
 
     return {
       ...toRefs(state),
-      onChooseImageBtnClick,
       onImageFileChange,
       noticeMessage,
-      callKeyboard,
     }
   },
 }

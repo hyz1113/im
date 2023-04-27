@@ -1,6 +1,5 @@
 <template>
   <div class="list">
-    <p>刷新次数: {{ count }}</p>
     <van-pull-refresh v-model="loading" @refresh="onRefresh">
     <div
         v-for="data in list"
@@ -54,7 +53,8 @@ export default {
       Mepal.getToken().then(res => {
         console.log('token ==== ', res);
         // localStorage.setItem('Admin-Token', res);
-        localStorage.setItem('Admin-Token', 'ST-1011-HpcKB58Jz9Ajs2AwtNQIuodnRWwiam-cas-6dd9bdf7b6-ks4mx');
+        localStorage.setItem('Admin-Token', 'ST-1033-XJZb8CwIcmYeepioHcO-ufQM0lEiam-cas-6dd9bdf7b6-ks4mx');
+        localStorage.setItem('UserId', '21');
       });
     }
 
