@@ -138,7 +138,7 @@ export default {
     const fetchMessageListByTim = async () => {
       try {
         const options = {
-          conversationID: state.conversationID,
+          conversationID: `C2C${state.conversationID}`,
         };
         // 如果存在有nextReq
         if (state.nextReqMessageID) { // 续拉数据
@@ -170,7 +170,7 @@ export default {
       const newMessageList = await buildMessageNickName(messageList);
       state.messageList = [...newMessageList, ...state.messageList];
       console.log(`state.messageList=== ${ state.messageList }`);
-      await setMessageRead();
+      // await setMessageRead();
     }
 
     const buildMessageKey = (message) => {
@@ -184,7 +184,7 @@ export default {
       }
       const params = {
         msgKey,
-        customerUid: state.customerUid,
+        customerUid: state.conversationID,
         limit: 10,
       };
       const res = await im.getHistoryMessageByServer(params);

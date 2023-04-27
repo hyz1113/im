@@ -54,7 +54,7 @@ export default {
       Mepal.getToken().then(res => {
         console.log('token ==== ', res);
         // localStorage.setItem('Admin-Token', res);
-        localStorage.setItem('Admin-Token', 'b1b7af5327de407dbf597c401b9c81a1');
+        localStorage.setItem('Admin-Token', 'ST-1011-HpcKB58Jz9Ajs2AwtNQIuodnRWwiam-cas-6dd9bdf7b6-ks4mx');
       });
     }
 

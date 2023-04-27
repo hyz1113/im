@@ -3,6 +3,7 @@ import TIMUploadPlugin from "tim-upload-plugin";
 import {im} from '@/api/im/api';
 import {reactive, toRefs} from "vue";
 import {useRoute} from "vue-router";
+import { showToast } from 'vant';
 
 export function IMBase() {
     const imBaseState = reactive({
@@ -88,7 +89,7 @@ export function IMBase() {
             console.log("建联了")
         } else {
             (imBaseState as any).commonAccountInfo = '';
-            alert('该客户未建联!');
+            showToast('该客户未建联!');
         }
     };
 

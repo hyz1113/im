@@ -3,7 +3,7 @@
         <van-image
             class="message-img"
             :style="imageStyle"
-            :src="displayImageInfo.imageUrl"
+            :src="displayImageInfo.url"
         />
     </div>
 </template>
@@ -24,7 +24,6 @@ export default {
     },
     computed: {
         displayImageInfo() {
-            // console.log('this.data.payload.imageInfoArray', this.data.payload.imageInfoArray);
             if (this.data.isServer) {
                 return this.data.payload.imageInfoArray[2];
             } else {
