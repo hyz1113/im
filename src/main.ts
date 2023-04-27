@@ -2,7 +2,8 @@ import {createApp} from 'vue'
 import App from './App.vue'
 import router from './router'
 import {store} from './store'
-import { i18n } from './locales/index'
+import { i18n } from './locales'
+import common from './mixins/common';
 import {
  Notify,
  Image as VanImage,
@@ -38,5 +39,6 @@ const app = createApp(App);
     .use(Field)
     .use(Toast)
     .use(i18n)
+    .use(common)
     .use(Vconsole)
     .mount('#app')
