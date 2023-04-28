@@ -14,6 +14,9 @@ export const im = {
         "content-Type": 'application/x-www-form-urlencoded'
     }),
 
+    /*移动端sse推送建立链接*/
+    getConnect: (params: Object) => get('/kol/crmIm/push/connect', { ...params }),
+
     /*获取移动端登录*/
     gotoLoginMepal: (params: Object) => post('/kol/authorization/mepal_login', { ...params }, {
         "content-Type": 'application/x-www-form-urlencoded'

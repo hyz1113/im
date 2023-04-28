@@ -5175,6 +5175,11 @@ event-pubsub@4.3.0:
   resolved "http://nexus.huobidev.com:8081/repository/huobi-npm/event-pubsub/-/event-pubsub-4.3.0.tgz#f68d816bc29f1ec02c539dc58c8dd40ce72cb36e"
   integrity sha512-z7IyloorXvKbFx9Bpie2+vMJKKx1fH1EN5yiTfp8CiLOTptSYy1g8H4yDpGlEdshL1PBiFtBHepF2cNsqeEeFQ==
 
+event-source-polyfill@^1.0.31:
+  version "1.0.31"
+  resolved "http://nexus.huobidev.com:8081/repository/huobi-npm/event-source-polyfill/-/event-source-polyfill-1.0.31.tgz#45fb0a6fc1375b2ba597361ba4287ffec5bf2e0c"
+  integrity sha512-4IJSItgS/41IxN5UVAVuAyczwZF7ZIEsM1XAoUzIHA6A+xzusEZUutdXz2Nr+MQPLxfTiCvqE79/C8HT8fKFvA==
+
 eventemitter3@^4.0.0:
   version "4.0.7"
   resolved "http://nexus.huobidev.com:8081/repository/huobi-npm/eventemitter3/-/eventemitter3-4.0.7.tgz#2de9b68f6528d5644ef5c59526a1b4a07306169f"
@@ -8028,6 +8033,11 @@ node-releases@^2.0.8:
   version "2.0.10"
   resolved "http://nexus.huobidev.com:8081/repository/huobi-npm/node-releases/-/node-releases-2.0.10.tgz#c311ebae3b6a148c89b1813fd7c4d3c024ef537f"
   integrity sha512-5GFldHPXVG/YZmFzJvKK2zDSzPKhEp0+ZR5SVaoSag9fsL5YgHbUHDfnG5494ISANDcK4KwPXAx2xqVEydmd7w==
+
+nodejs-websocket@^1.7.2:
+  version "1.7.2"
+  resolved "http://nexus.huobidev.com:8081/repository/huobi-npm/nodejs-websocket/-/nodejs-websocket-1.7.2.tgz#94abd1e248f57d4d1c663dec3831015c6dad98a6"
+  integrity sha512-PFX6ypJcCNDs7obRellR0DGTebfUhw1SXGKe2zpB+Ng1DQJhdzbzx1ob+AvJCLzy2TJF4r8cCDqMQqei1CZdPQ==
 
 normalize-package-data@^2.3.2, normalize-package-data@^2.5.0:
   version "2.5.0"

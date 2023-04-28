@@ -6,7 +6,6 @@
 
 <script>
 // import WebSocket from 'ws';
-import { EventSourcePolyfill } from 'event-source-polyfill';
 export default {
   name: "msgNotice",
   data() {
@@ -20,28 +19,13 @@ export default {
   },
   methods: {
     initWebSocket() {
-        const es = new EventSourcePolyfill('http://kol-crm-asset-mgt.global-base.tc-jp1.huobiapps.com/kol/crmIm/push/connect', {
-          headers: {
-            'Admin-Token': 'ST-1092-kiJIVtqCMfCrpCayL8gWNbuwpSYiam-cas-6dd9bdf7b6-ks4mx'
-          }
-        })
-
-      es.onopen = function (e) {
-        console.log('open success');
-      }
-
-      es.onmessage = function (e) {
-        console.log('e.data' + e);
-      }
-
-      es.onerror = function (err) {
-        console.log(err);
-        err & err.state === 401 && console.log('无权限');
-      }
-
-      es.onClose = function (e) {
-        console.log('连接关闭' + e);
-      }
+      // this.ws = new WebSocket('ws://hbg-kol-crm-gateway.global-base.tc-jp1.huobiapps.com/crmIm/push/connect'); // 创建websocket实例
+      this.ws = new WebSocket('ws://hbg-kol-crm-crm.global-base.tc-jp1.huobiapps.com:8080/crmIm/push/connect', ''); // 创建websocket实例
+      // this.ws.sendMessage = this.sendMessage.bind(this);
+      this.ws.onopen = this.onOpen.bind(this); // 绑定onopen事件处理函数
+      this.ws.onmessage = this.onMessage.bind(this); // 绑定onmessage事件处理函数
+      this.ws.onclose = this.onClose.bind(this); // 绑定onclose事件处理函数
+      this.ws.onerror = this.onError.bind(this); // 绑定onerror事件处理函数
     },
     onOpen() {
       console.log('websocket连接成功');
