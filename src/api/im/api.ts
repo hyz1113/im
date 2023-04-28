@@ -10,7 +10,9 @@ export const im = {
     getCustomerByTMI: (p: { accounts: string }) => get('/kol/crmIm/query/uid'),
     getUserImAccounts: (params: Object) => get('/kol/crmIm/admin/uid', { ...params }),
     getCustomerImInfo: (params: Object) => get('/kol/crmIm/query/relation', { ...params }),
-    getMySessionH5List: (params: Object) => get('/kol/crmIm/getMySessionH5List', { ...params }),
+    getMySessionH5List: (params: Object) => post('/kol/crmIm/getMySessionH5List', { ...params }, {
+        "content-Type": 'application/x-www-form-urlencoded'
+    }),
 
     /*获取移动端登录*/
     gotoLoginMepal: (params: Object) => post('/kol/authorization/mepal_login', { ...params }, {

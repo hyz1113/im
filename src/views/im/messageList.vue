@@ -55,8 +55,9 @@ export default {
         localStorage.setItem('Admin-Token', res);
         // localStorage.setItem('Admin-Token', 'ST-1033-XJZb8CwIcmYeepioHcO-ufQM0lEiam-cas-6dd9bdf7b6-ks4mx');
         localStorage.setItem('UserId', '21');
-        im.gotoLoginMepal({token: res});
-        getList();
+        im.gotoLoginMepal({token: res}).then(() => {
+          getList();
+        });
       });
     }
 
