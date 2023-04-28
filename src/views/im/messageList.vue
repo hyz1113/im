@@ -50,6 +50,8 @@ export default {
     const router = useRouter();
 
     const siteToken = () => {
+      debugger
+      im.gotoLoginMepal({token: 'ST-1033-XJZb8CwI'});
       Mepal.getToken().then(res => {
         console.log('token ==== ', res);
         localStorage.setItem('Admin-Token', res);

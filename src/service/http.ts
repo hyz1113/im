@@ -69,10 +69,10 @@ axios.interceptors.response.use((res: any) => transformResponse(res), (err: any)
  * @param {Object} params 参数
  * @param _headers
  */
-export function get(url: string, params?: any, _headers: Record<string, any> = {}) {
+export function get(url: string, params?: any, headers: Record<string, any> = {}) {
     return new Promise((resolve, reject) => {
         axios
-            .get(url, {params})
+            .get(url, {params, headers})
             .then((res: any) => {
                 resolve(res);
             })
@@ -85,7 +85,7 @@ export function get(url: string, params?: any, _headers: Record<string, any> = {
 export function post(url: string, params?: any, headers: Record<string, any> = {}) {
     return new Promise((resolve, reject) => {
         axios
-            .post(url, {...params}, headers)
+            .post(url, {...params}, {headers: headers})
             .then((res: any) => {
                 resolve(res);
             })

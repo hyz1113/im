@@ -13,7 +13,9 @@ export const im = {
     getMySessionH5List: (params: Object) => get('/kol/crmIm/getMySessionH5List', { ...params }),
 
     /*获取移动端登录*/
-    gotoLoginMepal: (params: Object) => post('/kol/authorization/mepal_login', { ...params }),
+    gotoLoginMepal: (params: Object) => post('/kol/authorization/mepal_login', { ...params }, {
+        "content-Type": 'application/x-www-form-urlencoded'
+    }),
     /*获取token*/
     getToken: () => get('/kol/authorization/getLoginToken'),
 }
