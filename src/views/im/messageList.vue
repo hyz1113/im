@@ -50,14 +50,13 @@ export default {
     const router = useRouter();
 
     const siteToken = () => {
-      debugger
-      im.gotoLoginMepal({token: 'ST-1033-XJZb8CwI'});
       Mepal.getToken().then(res => {
         console.log('token ==== ', res);
         localStorage.setItem('Admin-Token', res);
         // localStorage.setItem('Admin-Token', 'ST-1033-XJZb8CwIcmYeepioHcO-ufQM0lEiam-cas-6dd9bdf7b6-ks4mx');
         localStorage.setItem('UserId', '21');
         im.gotoLoginMepal({token: res});
+        getList();
       });
     }
 
@@ -139,10 +138,8 @@ export default {
       });
     }
 
-    siteToken();
-
     onMounted( async () => {
-      await getList();
+      await siteToken();
     })
     return {
       ...toRefs(state),
