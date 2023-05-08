@@ -11,13 +11,14 @@
           <template #title>
             <div class="title">
               <van-image
+                  contain
                   width="36"
                   height="36"
                   :src="require('@/assets/images/im/customer-photo.png')"
               />
               <div class="text m-l-10">
                   <div>{{ data.uid }}｜{{ data.customerName }}</div>
-                  <div>{{ getMsgContent(data.latestMsg, data) }}</div>
+                  <div class="msg">{{ getMsgContent(data.latestMsg, data) }}</div>
               </div>
             </div>
           </template>
@@ -50,6 +51,8 @@ export default {
     const router = useRouter();
 
     const siteToken = () => {
+      localStorage.setItem('Admin-Token', '72bb2ffe6d1f40d499dd606377aa58d5');
+      getList();
       Mepal.getToken().then(res => {
         console.log('token ==== ', res);
         localStorage.setItem('Admin-Token', res);
@@ -163,6 +166,18 @@ export default {
         margin-left: 10px;
         @include flex-align(flex-start, flex-start);
         flex-direction: column;
+        flex: 1;
+
+        .msg {
+            display: block;
+            width: 200px;
+            height: 20px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            color: #999;
+            text-align: left;
+        }
       }
     }
   time {
