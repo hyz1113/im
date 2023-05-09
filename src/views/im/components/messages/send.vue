@@ -10,10 +10,10 @@
           type="textarea"
       >
         <template #button>
-<!--          <van-uploader :before-read="onImageFileChange">-->
-<!--            -->
-<!--          </van-uploader>-->
-          <van-icon name="photo-o" size="30" @click="onImageFileChange"/>
+          <input type="file"
+                 id="imageFile"
+                 style="width: 50px"
+                 accept="image/*" @click="onImageFileChange"/>
           <van-button size="small" type="primary" @click="noticeMessage">发送</van-button>
         </template>
       </van-field>
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import {toRefs, nextTick, toRef, computed, getCurrentInstance} from "vue";
+import {toRefs, nextTick, toRef, ref, getCurrentInstance} from "vue";
 import {IMBase, createTencentTim} from '../../mixins/base';
 import Mepal from "@/utils/mepal";
 import {showToast} from "vant";
@@ -40,23 +40,24 @@ export default {
 
     const messageList = toRef(props, 'messageList');
     const customerTimId = toRef(props, 'customerTimId');
+    const imageFile = ref(null);
 
     const { proxy } = getCurrentInstance();
 
-    const onImageFileChange = async (files) => {
-      if (files) {
+    const onImageFileChange = async () => {
+      if(imageFile) {
         const email = 'lallal@qq.com';
         const realname = 'f888888';
         const text = `${email}_${realname}`;
-
-        await Mepal.uploadImage(files).then(async (res) => {
-          alert('上传成功！' + JSON.stringify(res));
-          imgAddWaterRark(files, text).then(res=> {
-            ctx.emit('sendImageMessage', res);
-          });
+        Mepal.uploadImage({}).then(async (res) => {
+          const dom = document.getElementById('imageFile');
+          ctx.emit('sendImageMessage', dom);
+          // imgAddWaterRark(files, text).then(res=> {
+          //   ctx.emit('sendImageMessage', res);
+          // });
         });
+        refreshImageFile();
       }
-      refreshImageFile();
     };
 
 

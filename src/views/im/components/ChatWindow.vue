@@ -483,6 +483,7 @@ export default {
       const options = buildMessageOptions({ file: image }, 'file', (progress) => {
         onFileMessageProcess(progress, message);
       });
+      console.log(`im  ${JSON.stringify(options)}`);
       // await createTencentTim();
       const message = imBaseState.$tim.createImageMessage(options);
       console.log('message======' + JSON.stringify(message));
