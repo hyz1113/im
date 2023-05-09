@@ -51,8 +51,8 @@ export default {
     const router = useRouter();
 
     const siteToken = () => {
-      localStorage.setItem('Admin-Token', '72bb2ffe6d1f40d499dd606377aa58d5');
-      getList();
+      // localStorage.setItem('Admin-Token', '72bb2ffe6d1f40d499dd606377aa58d5');
+      // getList();
       Mepal.getToken().then(res => {
         console.log('token ==== ', res);
         localStorage.setItem('Admin-Token', res);

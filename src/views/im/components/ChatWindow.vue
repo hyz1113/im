@@ -483,10 +483,9 @@ export default {
       const options = buildMessageOptions({ file: image }, 'file', (progress) => {
         onFileMessageProcess(progress, message);
       });
-      console.log(options);
       // await createTencentTim();
-      debugger
       const message = imBaseState.$tim.createImageMessage(options);
+      console.log('message======' + JSON.stringify(message));
       await sendMessage(message);
     };
 
@@ -535,6 +534,6 @@ export default {
 <style scoped lang="scss">
 .chat-window {
   background: #f7f8fa;
-  padding-bottom: 80px;
+  padding: 10px 10px 80px 10px;
 }
 </style>

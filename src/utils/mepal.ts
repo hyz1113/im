@@ -82,6 +82,10 @@ const mepal: any = {
   onClose(callback: any) {
     return mepal.onTrigger('onClose', callback)
   },
+  // 上传图片
+  uploadImage(data: any) {
+    return mepal.request('updateImage', data)
+  },
   onTrigger(event: any, callback: any, arg: any) {
     const id = mepal.getId()
     mepal.request('addTrigger', {

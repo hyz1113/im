@@ -10,9 +10,10 @@
           type="textarea"
       >
         <template #button>
-          <van-uploader :before-read="onImageFileChange">
-            <van-icon name="photo-o" size="30"/>
-          </van-uploader>
+<!--          <van-uploader :before-read="onImageFileChange">-->
+<!--            -->
+<!--          </van-uploader>-->
+          <van-icon name="photo-o" size="30" @click="onImageFileChange"/>
           <van-button size="small" type="primary" @click="noticeMessage">发送</van-button>
         </template>
       </van-field>
@@ -42,14 +43,17 @@ export default {
 
     const { proxy } = getCurrentInstance();
 
-    const onImageFileChange = (files) => {
+    const onImageFileChange = async (files) => {
       if (files) {
         const email = 'lallal@qq.com';
         const realname = 'f888888';
         const text = `${email}_${realname}`;
 
-        imgAddWaterRark(files, text).then(res=> {
+        await Mepal.uploadImage(files).then(async (res) => {
+          alert('上传成功！' + JSON.stringify(res));
+          imgAddWaterRark(files, text).then(res=> {
             ctx.emit('sendImageMessage', res);
+          });
         });
       }
       refreshImageFile();
