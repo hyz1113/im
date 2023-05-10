@@ -15,7 +15,8 @@ import {
  Button,
  Uploader,
  Locale,
- Toast
+ Toast,
+ Loading,
 } from 'vant';
 import Vconsole from '@/utils/vconsole';
 import 'vant/lib/index.css';
@@ -35,6 +36,7 @@ const app = createApp(App);
     .use(PullRefresh)
     .use(Uploader)
     .use(Button)
+    .use(Loading)
     .use(Icon)
     .use(Field)
     .use(Toast)

@@ -25,7 +25,6 @@
 import {toRefs, nextTick, toRef, ref, getCurrentInstance} from "vue";
 import {IMBase, createTencentTim} from '../../mixins/base';
 import Mepal from "@/utils/mepal";
-import {showToast} from "vant";
 import imgAddWaterRark from "@/mixins/imgAddWaterRark";
 
 export default {

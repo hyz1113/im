@@ -83,7 +83,9 @@ export function IMBase() {
             console.log("建联了")
         } else {
             (imBaseState as any).commonAccountInfo = '';
-            showToast('该客户未建联!');
+            showToast({
+                message: '该客户未建联!'
+            });
         }
     };
 

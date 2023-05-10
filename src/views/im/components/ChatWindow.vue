@@ -1,45 +1,39 @@
 <template>
   <div class="chat-window">
-    <van-list
-        v-model:loading="loading"
-        :finished="finished"
-        finished-text="没有更多了"
-        @load="onRefresh"
+    <div
+        v-for="item in messageList"
+        :key="item"
     >
-      <div
-          v-for="item in messageList"
-          :key="item"
-      >
-        <message-tip v-if="item.type === TYPES.MSG_GRP_TIP"></message-tip>
-        <message-bubble
-            v-else-if="!item.isRevoked"
-            :data="item"
-            @contextmenu="onMessageItemContextmenu">
-          <!-- 基础的文本消息 -->
-          <message-text v-if="item.type === TYPES.MSG_TEXT" :data="item"/>
-          <!--图片信息 -->
-          <message-image v-else-if="item.type === TYPES.MSG_IMAGE" :data="item"/>
-          <message-audio v-else-if="item.type === TYPES.MSG_AUDIO" :data="item" @play="onPlayAudit"/>
-          <!-- <message-file v-else-if="message.type === TYPES.MSG_FILE" :data="message" />-->
-          <message-face v-else-if="item.type === TYPES.MSG_FACE" :data="item"/>
-          <message-not-support v-else :data="item"/>
-        </message-bubble>
+      <message-tip v-if="item.type === TYPES.MSG_GRP_TIP"></message-tip>
+      <message-bubble
+          v-else-if="!item.isRevoked"
+          :data="item"
+          @contextmenu="onMessageItemContextmenu">
+        <!-- 基础的文本消息 -->
+        <message-text v-if="item.type === TYPES.MSG_TEXT" :data="item"/>
+        <!--图片信息 -->
+        <message-image v-else-if="item.type === TYPES.MSG_IMAGE" :data="item"/>
+        <message-audio v-else-if="item.type === TYPES.MSG_AUDIO" :data="item" @play="onPlayAudit"/>
+        <!-- <message-file v-else-if="message.type === TYPES.MSG_FILE" :data="message" />-->
+        <message-face v-else-if="item.type === TYPES.MSG_FACE" :data="item"/>
+        <message-not-support v-else :data="item"/>
+      </message-bubble>
 
-<!--        <message-revoked-->
-<!--            v-else-->
-<!--            :isEdit="item.type === TYPES.MSG_TEXT"-->
-<!--            :data="item"-->
-<!--        />-->
-      </div>
-      <message-send
-          :conversation-id="conversationId"
-          :imBaseState="imBaseState"
-          :customerTimId="customerTimId"
-          :messageList="messageList"
-          @sendTextMessage="sendTextMessage"
-          @sendImageMessage="sendImageMessage"
-      />
-    </van-list>
+      <!--        <message-revoked-->
+      <!--            v-else-->
+      <!--            :isEdit="item.type === TYPES.MSG_TEXT"-->
+      <!--            :data="item"-->
+      <!--        />-->
+    </div>
+    <message-send
+        :conversation-id="conversationId"
+        :imBaseState="imBaseState"
+        :customerTimId="customerTimId"
+        :messageList="messageList"
+        @sendTextMessage="sendTextMessage"
+        @sendImageMessage="sendImageMessage"
+    />
+    <van-loading color="#1989fa" v-if="loading"/>
   </div>
 </template>
 
@@ -50,7 +44,7 @@ import TIMUploadPlugin from 'tim-upload-plugin';
 import {reactive, toRefs, getCurrentInstance, computed, onMounted, onBeforeUnmount, nextTick} from 'vue';
 import { useRoute, onBeforeRouteLeave, useRouter } from 'vue-router';
 import {im} from '@/api/im/api';
-import {List} from 'vant';
+import {List, showToast} from 'vant';
 import MessageBubble from './messages/bubble';
 import MessageTip from './messages/tip';
 import MessageText from './messages/text';
@@ -68,8 +62,7 @@ export default {
     const state = reactive({
       isInitTim: false,
       isBindTimEvent: false,
-      finished: false,
-      loading: false,
+      loading: true,
       messageList: [],
       isCompleted: false,
       isTimCompleted: false,
@@ -93,10 +86,6 @@ export default {
     const TYPES = computed(() => {
       return TIM.TYPES
     })
-
-    const onRefresh = () => {
-      console.log('111');
-    }
 
    const {
         imBaseState,
@@ -153,6 +142,7 @@ export default {
       state.messageList = [...newMessageList, ...state.messageList];
       console.log(`获取到的消息的条数=== ${ state.messageList.length }`);
       scrollToBottom();
+      state.loading = false;
       await setMessageRead();
     }
 
@@ -356,7 +346,9 @@ export default {
         bindTimEventListener();
         state.isBindTimEvent = true;
       } else {
-        alert('暂时未能获取建联对象')
+        showToast({
+          message: '暂时未能获取建联对象!'
+        });
       }
     };
 
@@ -386,7 +378,6 @@ export default {
     };
 
     // 发送消息部分 ------------------------------
-
     const sendMessage = async (message) => {
       message.senderUserId = localStorage.getItem('UserId') || '' // 预定从 列表里-- adminUserID获取;
       await setMessageSenderInfo(message, true);
@@ -473,7 +464,6 @@ export default {
     return {
       ...toRefs(state),
       TYPES,
-      onRefresh,
       imBaseState,
       onMessageItemContextmenu,
       sendTextMessage,
