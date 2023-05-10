@@ -47,7 +47,7 @@
 import {useStore} from 'vuex'
 import TIM from 'tim-js-sdk/tim-js-friendship';
 import TIMUploadPlugin from 'tim-upload-plugin';
-import { reactive, toRefs, getCurrentInstance, computed, onMounted, onBeforeUnmount} from 'vue';
+import {reactive, toRefs, getCurrentInstance, computed, onMounted, onBeforeUnmount, nextTick} from 'vue';
 import { useRoute, onBeforeRouteLeave, useRouter } from 'vue-router';
 import {im} from '@/api/im/api';
 import {List} from 'vant';
@@ -107,37 +107,6 @@ export default {
         fetchTimAccountFriends,
    } = IMBase();
 
-    const startTimLoginLoop = async () => {
-      if (!imBaseState.$tim) {
-        return;
-      }
-      if (imBaseState.timCommonAccounts.length) {
-        await loginOutTim();
-        imBaseState.currentLoginCommonAccount = imBaseState.timCommonAccounts[imBaseState.currentLoginIndex] || null;
-        await loginTim(imBaseState.currentLoginCommonAccount.tencentUserId, imBaseState.currentLoginCommonAccount.sign);
-        if (imBaseState.timCommonAccounts.length > 1) {
-          imBaseState.currentLoginIndex += 1;
-          if (imBaseState.currentLoginIndex >= imBaseState.timCommonAccounts.length) {
-            imBaseState.currentLoginIndex = 0;
-          }
-          // 这里面定时15秒进行刷新
-          imBaseState.loginTimTimer = setTimeout(() => {
-            startTimLoginLoop();
-          }, 15000);
-        }
-      }
-    };
-    const stopTimLoginLoop = async () => {
-      if (imBaseState.loginTimTimer) {
-        clearTimeout(imBaseState.loginTimTimer);
-        imBaseState.loginTimTimer = null;
-      }
-      if (imBaseState.isLoginTim && imBaseState.$tim) {
-        await loginOutTim();
-      }
-    };
-
-
     const onMessageItemContextmenu = () => {
       console.log('222');
     }
@@ -152,7 +121,6 @@ export default {
           options.nextReqMessageID = state.nextReqMessageID;
         }
         const messageListResponse = await imBaseState.$tim.getMessageList(options);
-        console.log('22222');
         console.log('messageListResponse::', messageListResponse);
         if (messageListResponse.code === 0 && messageListResponse.data) {
           const msgListData = messageListResponse.data;
@@ -166,6 +134,13 @@ export default {
       return [];
     }
 
+    const scrollToBottom = () => {
+      const pageHeight = window.screen.height;
+      nextTick(() => {
+        window.scrollTo(0, pageHeight);
+      })
+    }
+
     const fetchMessageList = async () => {
       let messageList = [];
       messageList = await fetchMessageListByTim();
@@ -176,7 +151,8 @@ export default {
       }
       const newMessageList = await buildMessageNickName(messageList);
       state.messageList = [...newMessageList, ...state.messageList];
-      console.log(`state.messageList=== ${ state.messageList }`);
+      console.log(`获取到的消息的条数=== ${ state.messageList.length }`);
+      scrollToBottom();
       await setMessageRead();
     }
 
@@ -223,7 +199,6 @@ export default {
               }
             }
           } catch (e) {
-            console.log(e);
             item.payload = {};
           }
           return item;
