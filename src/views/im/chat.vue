@@ -27,7 +27,7 @@ export default {
     state.customerName = route.query.cname;
     state.pageTitle = `${state.conversationID}${state.customerName}`
     Mepal.setTitle(state.pageTitle);
-    console.log(`页面是 === ${state.pageTitle}`);
+    console.log(`页面是title === ${state.pageTitle}`);
 
     return {
       ...toRefs(state)

@@ -47,8 +47,8 @@
 import {useStore} from 'vuex'
 import TIM from 'tim-js-sdk/tim-js-friendship';
 import TIMUploadPlugin from 'tim-upload-plugin';
-import { reactive, toRefs, getCurrentInstance, computed, onMounted, onUnmounted} from 'vue';
-import { useRoute } from 'vue-router';
+import { reactive, toRefs, getCurrentInstance, computed, onMounted, onBeforeUnmount} from 'vue';
+import { useRoute, onBeforeRouteLeave, useRouter } from 'vue-router';
 import {im} from '@/api/im/api';
 import {List} from 'vant';
 import MessageBubble from './messages/bubble';
@@ -87,6 +87,7 @@ export default {
     const {dispatch} = useStore();
     const { proxy } = getCurrentInstance();
     const route = useRoute();
+    const router = useRouter();
     state.conversationID = route.query.userId;
 
     const TYPES = computed(() => {
@@ -308,12 +309,11 @@ export default {
     };
 
     const bindTimEventListener = () => {
-      imBaseState.$tim.on(TIM.EVENT.SDK_READY, onTimReady);
-
-      // imBaseState.$tim.on(TIM.EVENT.MESSAGE_RECEIVED, onTimReceivedMessage);
-      // imBaseState.$tim.on(TIM.EVENT.MESSAGE_MODIFIED, onTimModifiedMessage);
-      // imBaseState.$tim.on(TIM.EVENT.MESSAGE_REVOKED, onTimRevokedMessage);
-      // imBaseState.$tim.on(TIM.EVENT.MESSAGE_READ_BY_PEER, onTimMessageReadByPeer);
+      imBaseState.$tim.on(TIM.EVENT.CONVERSATION_LIST_UPDATED, onTimReady);
+      imBaseState.$tim.on(TIM.EVENT.MESSAGE_RECEIVED, onTimReceivedMessage);
+      imBaseState.$tim.on(TIM.EVENT.MESSAGE_MODIFIED, onTimModifiedMessage);
+      imBaseState.$tim.on(TIM.EVENT.MESSAGE_REVOKED, onTimRevokedMessage);
+      imBaseState.$tim.on(TIM.EVENT.MESSAGE_READ_BY_PEER, onTimMessageReadByPeer);
     };
 
     const onTimReceivedMessage = async (event) => {
@@ -383,17 +383,6 @@ export default {
       } else {
         alert('暂时未能获取建联对象')
       }
-    };
-
-    /**
-     * 登出系统
-     * */
-   const logoutTim = () => {
-      return new Promise(resolve => {
-        imBaseState.$tim.logout().finally(() => {
-          resolve();
-        });
-      });
     };
 
     // 当tim进行初始化的时候进行的操作
@@ -492,19 +481,19 @@ export default {
 
 
     onMounted( async () => {
-      // await logoutTim(); // 先登出
       await fetchTimInfo();
       await initTencentTim();
       await loginTim();
     })
 
-    // onUnmounted(async () => {
-    //   debugger
-    //   await stopTimLoginLoop();
-    //   bindTimEventListener();
-    //   await imBaseState.$tim.destroy();
-    //   imBaseState.$tim = null;
-    // })
+    onBeforeRouteLeave(async (to, from, next) => {
+      await loginOutTim();
+      unBindTimeEventListener();
+      imBaseState.$tim = null;
+      next(() => {
+        router.push({path:'/list'})
+      });
+    })
 
     return {
       ...toRefs(state),

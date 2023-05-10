@@ -68,12 +68,6 @@ export function IMBase() {
             return true;
         }
         return false;
-        // 注册全局的tim
-        // dispatch('im/setTim', tim).then((res) => {
-        //   state.ntim = computed(() => getters['im/getTim']);
-        // }).catch((err) => {
-        //   console.log(err)
-        // })
     }
 
     const fetchTimInfo = async () => {
@@ -99,7 +93,6 @@ export function IMBase() {
                 userID: (imBaseState as any).commonAccountInfo.commonTencentUserId + '',
                 userSig: (imBaseState as any).commonAccountInfo.commonUidUserSign
             });
-            console.log(loginTimRes);
             imBaseState.isLoginTim = true;
         } catch (ex) {
             console.log(ex);
@@ -113,7 +106,7 @@ export function IMBase() {
                 await (imBaseState as any).$tim.logout();
             }
         } catch (ex) {
-            console.log('ex');
+            console.log('登出失败了');
         }
         imBaseState.isLoginTim = false;
     };
@@ -129,26 +122,6 @@ export function IMBase() {
             }
         }
     };
-
-    // const fetchCustomerCommonIdInfo = async (ids: any, type: any) => {
-    //     const params = {
-    //         ids,
-    //         type
-    //     };
-    //     const res = await im.getUserImAccounts(params);
-    //     if (res && Array.isArray((res as any).data)) {
-    //         (imBaseState as any).timCommonAccounts = (res as any).data.map((item: any) => {
-    //             return {
-    //                 ...item,
-    //                 customerTimUserId: null,
-    //                 conversationID: null,
-    //                 unreadMessageCount: 0
-    //             }
-    //         });
-    //     } else {
-    //         (imBaseState as any).timCommonAccounts = [];
-    //     }
-    // };
 
     const fetchTimAccountFriends = async () => {
         const friendRes = await (imBaseState as any).$tim.getFriendList();
@@ -169,18 +142,3 @@ export function IMBase() {
         fetchTimAccountFriends,
     }
 }
-
-
-//
-// export default {
-//     setup() {
-//         return {
-//             ...toRefs(state),
-//             fetchTimAppID,
-//             createTencentTim,
-//             loginTim,
-//             loginOutTim,
-//             checkUserCanUseIm,
-//         }
-//     },
-// }
