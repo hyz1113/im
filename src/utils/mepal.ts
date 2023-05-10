@@ -76,6 +76,12 @@ const mepal: any = {
       name: name
     })
   },
+  showLoading(data) {
+    return mepal.request("showLoading", data)
+  },
+  hideLoading() {
+    return mepal.request("hideLoading", {})
+  },
   onPageBack(callback: any) {
     return mepal.onTrigger('pageBack', callback)
   },
