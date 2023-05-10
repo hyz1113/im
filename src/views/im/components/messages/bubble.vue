@@ -108,8 +108,8 @@ export default {
     justify-content: flex-start;
 }
 .avatar {
-    width: 36px;
-    height: 36px;
+    width: 26px;
+    height: 26px;
     border-radius: 5px;
 }
 .message-bubble {
@@ -127,14 +127,12 @@ export default {
     position: relative;
     display: flex;
     flex-direction: column;
-    padding: 0 8px;
+    padding: 0 6px;
 
     .send-info {
         display: flex;
         width: 100%;
-        font-size: 13px;
-        margin-left: 4px;
-        margin-right: 4px;
+        font-size: 12px;
         margin-bottom: 4px;
         color: #000;
         span {
@@ -201,7 +199,6 @@ export default {
 }
 .message-label {
   align-self: flex-end;
-  font-family: PingFangSC-Regular;
   font-weight: 400;
   font-size: 12px;
   color: #B6B8BA;

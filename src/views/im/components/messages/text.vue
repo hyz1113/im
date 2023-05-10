@@ -57,7 +57,7 @@ export default {
 .message-text {
     height: auto;
     line-height: 20px;
-    margin: 5px;
+    margin: 0 5px;
     &,
     &div {
         display: flex;
