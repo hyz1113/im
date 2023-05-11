@@ -22,7 +22,7 @@ export default {
     initWebSocket() {
         const es = new EventSourcePolyfill('http://kol-crm-asset-mgt.global-base.tc-jp1.huobiapps.com/kol/crmIm/push/connect', {
           headers: {
-            'Admin-Token': 'ST-1092-kiJIVtqCMfCrpCayL8gWNbuwpSYiam-cas-6dd9bdf7b6-ks4mx'
+            'Admin-Token': 'a06b277c451d4af6b17c7b5110d2e10a'
           }
         })
 

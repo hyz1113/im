@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Mepal from '@/utils/mepal';
+import {showToast} from "vant";
 
 // 先简单获取下语言
 const getLang = () => {
@@ -76,8 +77,11 @@ export function get(url: string, params?: any, headers: Record<string, any> = {}
         axios
             .get(url, {params, headers})
             .then((res: any) => {
-                if([302, 1005].includes(res.code)) {
-                    Mepal.login();
+                if([302].includes(res.code)) {
+                    // Mepal.login();
+                    showToast({
+                        message: '请重新登录'
+                    })
                 } else {
                     resolve(res);
                 }
@@ -93,8 +97,11 @@ export function post(url: string, params?: any, headers: Record<string, any> = {
         axios
             .post(url, {...params}, {headers: headers})
             .then((res: any) => {
-                if([302, 1005].includes(res.code)) {
-                    Mepal.login();
+                if([302].includes(res.code)) {
+                    // Mepal.login();
+                    showToast({
+                        message: '请重新登录'
+                    })
                 } else {
                     resolve(res);
                 }

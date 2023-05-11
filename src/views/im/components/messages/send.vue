@@ -1,7 +1,7 @@
 <template>
   <div class="message-input">
     <!--    <van-icon name="photo-o" @click="onChooseImageBtnClick" />-->
-    <van-cell-group inset>
+    <van-cell-group>
       <van-field
           v-model="messageValue"
           center
@@ -10,10 +10,17 @@
           type="textarea"
       >
         <template #button>
-          <input type="file"
-                 id="imageFile"
-                 style="width: 50px"
-                 accept="image/*" @click="onImageFileChange"/>
+          <div class="uploadFile">
+            <van-icon class="bg" name="photo-o" size="40"/>
+            <input
+                type="file"
+                class="button"
+                id="imageFile"
+                accept="image/*"
+                @click="onImageFileChange"
+            />
+          </div>
+
           <van-button size="small" type="primary" @click="noticeMessage">发送</van-button>
         </template>
       </van-field>
@@ -41,20 +48,18 @@ export default {
     const customerTimId = toRef(props, 'customerTimId');
     const imageFile = ref(null);
 
-    const { proxy } = getCurrentInstance();
+    const {proxy} = getCurrentInstance();
 
     const onImageFileChange = async () => {
-      if(imageFile) {
+      if (imageFile) {
         const email = 'lallal@qq.com';
         const realname = 'f888888';
         const text = `${email}_${realname}`;
-        Mepal.uploadImage({}).then(async (res) => {
-          const dom = document.getElementById('imageFile');
-          ctx.emit('sendImageMessage', dom);
-          // imgAddWaterRark(files, text).then(res=> {
-          //   ctx.emit('sendImageMessage', res);
-          // });
-        });
+        const dom = document.getElementById('imageFile');
+        ctx.emit('sendImageMessage', dom);
+        // imgAddWaterRark(files, text).then(res=> {
+        //   ctx.emit('sendImageMessage', res);
+        // });
         refreshImageFile();
       }
     };
@@ -94,6 +99,7 @@ export default {
   }
 
   .van-field {
+    padding: 0 20px;
 
     ::v-deep .van-field__button {
       display: flex;
@@ -102,10 +108,32 @@ export default {
         margin: 0 5px;
       }
     }
+  }
 
-    .van-uploader {
+  .uploadFile {
+    width: 40px;
+    margin-right: 10px;
+    position: relative;
 
+    .bg, input[type="file"] {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .bg {
+      z-index: 1;
+      top: -4px;
+    }
+
+    input[type="file"]{
+      opacity: 0;
+      z-index: 2;
     }
   }
+
+
 }
 </style>

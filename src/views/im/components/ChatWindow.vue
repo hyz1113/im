@@ -159,6 +159,7 @@ export default {
     };
 
     const fetchMessageListByServer = async () => {
+      alert('执行了');
       let msgKey = state.nextReqMessageID;
       if (state.nextReqMessage && !state.nextReqMessage.isServer) {
         msgKey = buildMessageKey(state.nextReqMessage); // `${this.nextReqMessage.sequence}_${this.nextReqMessage.random}_${this.nextReqMessage.time}`;
@@ -390,6 +391,7 @@ export default {
         if (index > -1) {
           state.messageList.splice(index, 1, newMessage);
         }
+        console.log(`发送的消息是=== ${ JSON.stringify(newMessage)}`);
       } catch (error) {
         showToast( error.message || '发送失败');
       }

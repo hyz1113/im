@@ -1,41 +1,41 @@
 <template>
   <div class="list">
     <van-pull-refresh v-model="loading" @refresh="onRefresh">
-    <div
-        v-for="data in list"
-        :key="data"
-        class="item">
-      <van-cell-group>
-        <van-cell @click="togoDetail(data)">
-          <!-- 使用 title 插槽来自定义标题 -->
-          <template #title>
-            <div class="title">
-              <van-image
-                  contain
-                  width="36"
-                  height="36"
-                  :src="require('@/assets/images/im/customer-photo.png')"
-              />
-              <div class="text m-l-10">
+      <div
+          v-for="data in list"
+          :key="data"
+          class="item">
+        <van-cell-group>
+          <van-cell @click="togoDetail(data)">
+            <!-- 使用 title 插槽来自定义标题 -->
+            <template #title>
+              <div class="title">
+                <van-image
+                    contain
+                    width="36"
+                    height="36"
+                    :src="require('@/assets/images/im/customer-photo.png')"
+                />
+                <div class="text m-l-10">
                   <div>{{ data.uid }}｜{{ data.customerName }}</div>
                   <div class="msg">{{ getMsgContent(data.latestMsg, data) }}</div>
+                </div>
               </div>
-            </div>
-          </template>
-          <!-- 使用 right-icon 插槽来自定义右侧图标 -->
-          <template #right-icon>
-            <time>{{ formatLastMsgTime(data.latestMsgTime) }}</time>
-          </template>
-        </van-cell>
-      </van-cell-group>
-    </div>
+            </template>
+            <!-- 使用 right-icon 插槽来自定义右侧图标 -->
+            <template #right-icon>
+              <time>{{ formatLastMsgTime(data.latestMsgTime) }}</time>
+            </template>
+          </van-cell>
+        </van-cell-group>
+      </div>
     </van-pull-refresh>
   </div>
 </template>
 
 <script>
 import {computed, onMounted, reactive, toRefs} from 'vue';
-import { useRouter } from 'vue-router';
+import {useRouter} from 'vue-router';
 import Mepal from "@/utils/mepal";
 import {im} from "@/api/im/api";
 import moment from 'moment';
@@ -49,41 +49,44 @@ export default {
       list: []
     })
     const router = useRouter();
+    /*
+   * 显示的消息类型
+   * */
+    const timMessageTypes = {
+      TEXT: 'TIMTextElem',
+      IMAGE: 'TIMImageElem'
+    };
+    Mepal.setTitle({title: 'im'});
 
     const siteToken = () => {
-      // localStorage.setItem('Admin-Token', 'f20ba09a14ab40588c58acddb2896403');
-      // getList();
+      localStorage.setItem('Admin-Token', '473c4965495241c784396548d93c2f12');
+      getList();
       Mepal.getToken().then(res => {
         console.log('token ==== ', res);
         localStorage.setItem('Admin-Token', res);
-        // localStorage.setItem('Admin-Token', 'ST-1033-XJZb8CwIcmYeepioHcO-ufQM0lEiam-cas-6dd9bdf7b6-ks4mx');
-        localStorage.setItem('UserId', '21');
         im.gotoLoginMepal({token: res}).then(() => {
+          localStorage.setItem('UserId', '21');
           getList();
         });
       });
     }
 
     /*
-    * 显示的消息类型
-    * */
-    const timMessageTypes = {
-      TEXT: 'TIMTextElem',
-      IMAGE: 'TIMImageElem'
-    };
-
-    /*
     * 获取列表数据
     * */
     const getList = async () => {
+      state.loading = true;
       const res = await im.getMySessionH5List();
-      if(res) {
+      if (res) {
         state.list = res.data;
+        state.loading = false;
+        setTimeout(getList, 15000); // 每隔10分钟重新刷新一次列表
       }
     }
 
     const onRefresh = () => {
       state.count += 1;
+      getList();
     }
 
     /*
@@ -94,7 +97,7 @@ export default {
         const latestMsgTime = moment(time * 1000);
         if (latestMsgTime.isSame(moment(), 'day')) {
           return latestMsgTime.format('HH:mm:ss');
-        } else if(latestMsgTime.isSame(moment().subtract(1, 'day'), 'day')) {
+        } else if (latestMsgTime.isSame(moment().subtract(1, 'day'), 'day')) {
           return "昨天"
         } else {
           return latestMsgTime.format('YYYY/MM/DD');
@@ -138,13 +141,14 @@ export default {
     const togoDetail = (data) => {
       router.push({
         path: '/chat',
-        query: { userId: data.uid, cname: data.customerName }
+        query: {userId: data.uid, cname: data.customerName}
       });
     }
 
-    onMounted( async () => {
+    onMounted(async () => {
       await siteToken();
     })
+
     return {
       ...toRefs(state),
       onRefresh,
@@ -158,28 +162,29 @@ export default {
 
 <style scoped lang="scss">
 .list {
-    .title {
-      @include f-s-color(14px, #333);
-      @include flex-align(flex-start, center);
+  .title {
+    @include f-s-color(14px, #333);
+    @include flex-align(flex-start, center);
 
-      .text {
-        margin-left: 10px;
-        @include flex-align(flex-start, flex-start);
-        flex-direction: column;
-        flex: 1;
+    .text {
+      margin-left: 10px;
+      @include flex-align(flex-start, flex-start);
+      flex-direction: column;
+      flex: 1;
 
-        .msg {
-            display: block;
-            width: 200px;
-            height: 20px;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
-            color: #999;
-            text-align: left;
-        }
+      .msg {
+        display: block;
+        width: 200px;
+        height: 20px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        color: #999;
+        text-align: left;
       }
     }
+  }
+
   time {
     @include f-s-color(13px, #999);
   }
