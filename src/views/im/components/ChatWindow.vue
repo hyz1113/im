@@ -33,7 +33,6 @@
         @sendTextMessage="sendTextMessage"
         @sendImageMessage="sendImageMessage"
     />
-    <van-loading color="#1989fa" v-if="loading"/>
   </div>
 </template>
 
@@ -62,7 +61,6 @@ export default {
     const state = reactive({
       isInitTim: false,
       isBindTimEvent: false,
-      loading: true,
       messageList: [],
       isCompleted: false,
       isTimCompleted: false,
@@ -131,7 +129,8 @@ export default {
     }
 
     const fetchMessageList = async () => {
-      let messageList = [];
+      Mepal.showLoading(); // 打开loading 窗
+      let messageList;
       messageList = await fetchMessageListByTim();
       if (state.isTimCompleted && !state.isServerCompleted) {
         const serverMessageList = await fetchMessageListByServer();
@@ -142,7 +141,7 @@ export default {
       state.messageList = [...newMessageList, ...state.messageList];
       console.log(`获取到的消息的条数=== ${ state.messageList.length }`);
       scrollToBottom();
-      state.loading = false;
+      Mepal.hideLoading(); // 关闭loading 窗
       await setMessageRead();
     }
 
