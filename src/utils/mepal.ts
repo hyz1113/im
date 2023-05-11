@@ -90,7 +90,7 @@ const mepal: any = {
   },
   // 上传图片
   uploadImage(data: any) {
-    return mepal.request('updateImage', data)
+    return mepal.request('uploadImage', data)
   },
   onTrigger(event: any, callback: any, arg: any) {
     const id = mepal.getId()
