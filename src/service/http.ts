@@ -1,4 +1,6 @@
 import axios from 'axios';
+import Mepal from '@/utils/mepal';
+
 // 先简单获取下语言
 const getLang = () => {
     let lang = location.pathname.split('/')[1] || 'en-us';
@@ -74,7 +76,11 @@ export function get(url: string, params?: any, headers: Record<string, any> = {}
         axios
             .get(url, {params, headers})
             .then((res: any) => {
-                resolve(res);
+                if([302, 1005].includes(res.code)) {
+                    Mepal.login();
+                } else {
+                    resolve(res);
+                }
             })
             .catch((err: any) => {
                 reject(err);
@@ -87,7 +93,11 @@ export function post(url: string, params?: any, headers: Record<string, any> = {
         axios
             .post(url, {...params}, {headers: headers})
             .then((res: any) => {
-                resolve(res);
+                if([302, 1005].includes(res.code)) {
+                    Mepal.login();
+                } else {
+                    resolve(res);
+                }
             })
             .catch((err: any) => {
                 reject(err);

@@ -33,7 +33,6 @@ export default {
         imageStyle() {
             return {
                 width: `${this.displayImageInfo.width}px`,
-                height: `${this.displayImageInfo.height}px`
             }
         },
     },
@@ -45,7 +44,7 @@ export default {
     position: relative;
     .message-img {
         max-width: 275px;
-        max-height: 300px;
+
         &.isWidth {
             width: 100%;
         }
