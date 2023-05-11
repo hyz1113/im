@@ -76,7 +76,7 @@ const mepal: any = {
       name: name
     })
   },
-  showLoading(data) {
+  showLoading(data: any) {
     return mepal.request("showLoading", data)
   },
   hideLoading() {
