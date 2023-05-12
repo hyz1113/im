@@ -11170,6 +11170,15 @@ vue-loader@^17.0.0:
     hash-sum "^2.0.0"
     loader-utils "^2.0.0"
 
+vue-loader@^17.1.1:
+  version "17.1.1"
+  resolved "http://nexus.huobidev.com:8081/repository/huobi-npm/vue-loader/-/vue-loader-17.1.1.tgz#546c85eb844f98653921c02e8b0b060ebea19bfb"
+  integrity sha512-qpqEVkKdrAsgyIBMHaiXurDeCuBWqRyKqg2GI4aG3NbggEls+BLqTZdqahbJJh7fm83sz+iz3gg6eDWdbNlG7Q==
+  dependencies:
+    chalk "^4.1.0"
+    hash-sum "^2.0.0"
+    watchpack "^2.4.0"
+
 vue-router@^4.0.3:
   version "4.1.6"
   resolved "http://nexus.huobidev.com:8081/repository/huobi-npm/vue-router/-/vue-router-4.1.6.tgz#b70303737e12b4814578d21d68d21618469375a1"
