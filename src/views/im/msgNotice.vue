@@ -1,8 +1,6 @@
 <template>
-  <div class="content">
-      <div class="left">left</div>
-      <div class="center">center</div>
-      <div class="right">right</div>
+  <div>
+    dsfsdfsfs
   </div>
 </template>
 
@@ -24,7 +22,7 @@ export default {
     initWebSocket() {
         const es = new EventSourcePolyfill('http://kol-crm-asset-mgt.global-base.tc-jp1.huobiapps.com/kol/crmIm/push/connect', {
           headers: {
-            'Admin-Token': 'a06b277c451d4af6b17c7b5110d2e10a'
+            'Admin-Token': 'ST-1092-kiJIVtqCMfCrpCayL8gWNbuwpSYiam-cas-6dd9bdf7b6-ks4mx'
           }
         })
 
@@ -65,63 +63,6 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
-  // 方法1：
-  .content {
-    width: 100%;
-    display: flex;
-    background: gray;
-    flex-flow: column;
+<style scoped>
 
-
-    .left, .right {
-      width: 300px;
-    }
-    .left {
-      background: yellowgreen;
-      height: 400px;
-    }
-    .right {
-      background: red;
-      height: 200px;
-    }
-    .center{
-      background: green;
-      flex: 0 0 100px;
-      height: 300px;
-    }
-  }
-
-  ////方法2：
-  //.content {
-  //  width: 100%;
-  //  background: gray;
-  //  height: 400px;
-  //
-  //
-  //  .left, .right {
-  //    width: 200px;
-  //    position: absolute;
-  //  }
-  //
-  //  .left {
-  //    background: yellowgreen;
-  //    left: 0;
-  //    height: 300px;
-  //  }
-  //
-  //  .right {
-  //    background: red;
-  //    right: 0;
-  //  }
-  //  .center {
-  //    position: absolute;
-  //    left: 200px;
-  //    right: 200px;
-  //    height: 200px;
-  //    text-align: center;
-  //    color: #000;
-  //    background: #006EFF;
-  //  }
-  //}
 </style>
