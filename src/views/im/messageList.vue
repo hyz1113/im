@@ -59,8 +59,9 @@ export default {
     Mepal.setTitle({title: 'im'});
 
     const siteToken = () => {
-      localStorage.setItem('Admin-Token', '473c4965495241c784396548d93c2f12');
-      getList();
+      // localStorage.setItem('Admin-Token', 'd750717793a043848c52695b138cf9b7');
+      // localStorage.setItem('UserId', '21');
+      // getList();
       Mepal.getToken().then(res => {
         console.log('token ==== ', res);
         localStorage.setItem('Admin-Token', res);

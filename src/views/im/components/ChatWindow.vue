@@ -159,7 +159,6 @@ export default {
     };
 
     const fetchMessageListByServer = async () => {
-      alert('执行了');
       let msgKey = state.nextReqMessageID;
       if (state.nextReqMessage && !state.nextReqMessage.isServer) {
         msgKey = buildMessageKey(state.nextReqMessage); // `${this.nextReqMessage.sequence}_${this.nextReqMessage.random}_${this.nextReqMessage.time}`;

@@ -39,6 +39,7 @@ export default {
 .chat {
   background: #f7f8fa;
   height: 100vh;
+  overflow-x: hidden;
 
   .header {
     padding: 10px;
