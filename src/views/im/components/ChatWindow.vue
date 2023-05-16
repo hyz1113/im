@@ -446,8 +446,9 @@ export default {
     };
 
 
+    alert('进入了详情页====11')
     onMounted( async () => {
-      alert('进入了详情页')
+      alert('进入了详情页======2')
       await fetchTimInfo();
       await initTencentTim();
       await loginTim();
@@ -458,7 +459,7 @@ export default {
       unBindTimeEventListener();
       imBaseState.$tim = null;
       next(() => {
-        router.push({path:'/list'})
+        router.push({path:'list'})
       });
     })
 
