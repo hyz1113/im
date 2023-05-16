@@ -46,7 +46,8 @@ export default {
     const state = reactive({
       loading: false,
       count: 0,
-      list: []
+      list: [],
+      reqList: null,
     })
     const router = useRouter();
     /*
@@ -83,7 +84,7 @@ export default {
       if (res) {
         state.list = res.data;
         state.loading = false;
-        setTimeout(getList, 15000); // 每隔10分钟重新刷新一次列表
+        state.reqList = setTimeout(getList, 15000); // 每隔10分钟重新刷新一次列表
       }
     }
 
@@ -142,6 +143,7 @@ export default {
     * 跳转到详情
     * */
     const togoDetail = (data) => {
+      clearTimeout(state.reqList)
       router.push({
         path: '/chat',
         query: {userId: data.uid, cname: data.customerName}
