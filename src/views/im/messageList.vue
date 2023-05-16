@@ -1,5 +1,6 @@
 <template>
   <div class="list">
+    <router-link to="chat">888</router-link>
     <van-pull-refresh v-model="loading" @refresh="onRefresh">
       <div
           v-for="data in list"
@@ -144,7 +145,6 @@ export default {
     const togoDetail = (data) => {
       alert('跳转到详情页了')
       alert(`${JSON.stringify(data)}`);
-      alert(`${JSON.stringify(router)}`);
       router.push({
         path: 'chat',
         query: {userId: data.uid, cname: data.customerName}
