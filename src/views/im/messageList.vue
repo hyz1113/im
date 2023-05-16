@@ -143,13 +143,10 @@ export default {
     * 跳转到详情
     * */
     const togoDetail = (data) => {
-      alert('跳转到详情页了')
-      alert(`${JSON.stringify(data)}`);
       router.push({
         path: '/chat',
         query: {userId: data.uid, cname: data.customerName}
       });
-      alert('跳转到详情页了---000')
     }
 
     onMounted(async () => {

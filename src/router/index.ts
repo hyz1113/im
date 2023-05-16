@@ -1,5 +1,7 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import messageList from '@/views/im/messageList.vue'
+import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
+import messageList from '@/views/im/messageList.vue';
+import chat from '@/views/im/chat.vue';
+import notice from '@/views/im/msgNotice.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -10,17 +12,17 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/chat',
     name: 'chat',
-    component: import('@/views/im/chat.vue')
+    component: chat
   },
   {
     path: '/notice',
     name: 'notice',
-    component: import('@/views/im/msgNotice.vue')
+    component: notice
   },
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(process.env.BASE_URL),
   routes
 })
 
