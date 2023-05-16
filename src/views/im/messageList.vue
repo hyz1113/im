@@ -59,7 +59,7 @@ export default {
     Mepal.setTitle({title: 'im'});
 
     const siteToken = () => {
-      // localStorage.setItem('Admin-Token', 'a2e064182ec4432cb8ad6aab44046c11');
+      // localStorage.setItem('Admin-Token', '1c1ad86624bd4635b6b0afc5a39feffa');
       // localStorage.setItem('UserId', '14815');
       // getList();
       Mepal.getToken().then(res => {
@@ -143,7 +143,7 @@ export default {
     * */
     const togoDetail = (data) => {
       router.push({
-        path: '/chat',
+        path: 'chat',
         query: {userId: data.uid, cname: data.customerName}
       });
     }
