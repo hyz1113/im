@@ -1,6 +1,6 @@
 <template>
   <div class="chat">
-    <im-chat-main />
+    jfsljflksjflksjfsljflksjflsjfsljflskflsjflskfjslkjfslk
   </div>
 </template>
 
