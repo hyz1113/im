@@ -1,6 +1,5 @@
 <template>
   <div class="list">
-    <a href="http://www.baidu.com">888</a>
     <van-pull-refresh v-model="loading" @refresh="onRefresh">
       <div
           v-for="data in list"
@@ -60,19 +59,19 @@ export default {
     Mepal.setTitle({title: 'im'});
 
     const siteToken = () => {
-      localStorage.setItem('Admin-Token', 'f6916af3633d427db3a51157459eee21');
-      localStorage.setItem('UserId', '14815');
-      getList();
-      // Mepal.getToken().then(res => {
-      //   console.log('token ==== ', res);
-      //   localStorage.setItem('Admin-Token', res);
-      //   im.gotoLoginMepal({token: res}).then((data) => {
-      //     const {userId} = data.data;
-      //     console.log('userId ==== ', userId);
-      //     localStorage.setItem('UserId', userId);
-      //     getList();
-      //   });
-      // });
+      // localStorage.setItem('Admin-Token', 'a2e064182ec4432cb8ad6aab44046c11');
+      // localStorage.setItem('UserId', '14815');
+      // getList();
+      Mepal.getToken().then(res => {
+        console.log('token ==== ', res);
+        localStorage.setItem('Admin-Token', res);
+        im.gotoLoginMepal({token: res}).then((data) => {
+          const {userId} = data.data;
+          console.log('userId ==== ', userId);
+          localStorage.setItem('UserId', userId);
+          getList();
+        });
+      });
     }
 
     /*
