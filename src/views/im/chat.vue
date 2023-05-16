@@ -1,6 +1,6 @@
 <template>
   <div class="chat">
-    jfsljflksjflksjfsljflksjflsjfsljflskflsjflskfjslkjfslk
+    <im-chat-main />
   </div>
 </template>
 
@@ -17,22 +17,16 @@ export default {
     ImChatMain,
   },
   setup() {
-    alert('111')
     const state = reactive({
       conversationID: '',
       customerName: '',
       pageTitle: ''
     });
-    alert('333')
     const route = useRoute();
-    alert('555')
     state.conversationID = route.query.userId;
     state.customerName = route.query.cname;
-    alert(JSON.stringify(state))
     state.pageTitle = `${state.conversationID}_${state.customerName}`
     Mepal.setTitle({title: state.pageTitle});
-
-    alert('设置了页面' + state.pageTitle)
 
     return {
       ...toRefs(state)
