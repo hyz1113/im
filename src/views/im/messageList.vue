@@ -1,6 +1,6 @@
 <template>
   <div class="list">
-    <router-link to="chat">888</router-link>
+    <a href="http://www.baidu.com">888</a>
     <van-pull-refresh v-model="loading" @refresh="onRefresh">
       <div
           v-for="data in list"
