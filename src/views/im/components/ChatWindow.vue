@@ -447,6 +447,7 @@ export default {
 
 
     onMounted( async () => {
+      alert('进入了详情页')
       await fetchTimInfo();
       await initTencentTim();
       await loginTim();

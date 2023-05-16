@@ -28,6 +28,8 @@ export default {
     state.pageTitle = `${state.conversationID}_${state.customerName}`
     Mepal.setTitle({title: state.pageTitle});
 
+    alert('设置了页面' + state.pageTitle)
+
     return {
       ...toRefs(state)
     }

@@ -76,6 +76,7 @@ export function IMBase() {
             uid: conversationID, // 当前的客户uid
             leadsId: 0
         };
+        alert('准备建联了')
         const res = await im.getCustomerImInfo(params);
         if (res && (res as any).data) {
             imBaseState.commonAccountInfo = (res as any).data;
