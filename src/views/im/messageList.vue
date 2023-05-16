@@ -146,7 +146,7 @@ export default {
       alert('跳转到详情页了')
       alert(`${JSON.stringify(data)}`);
       router.push({
-        path: 'chat',
+        path: '/chat',
         query: {userId: data.uid, cname: data.customerName}
       });
       alert('跳转到详情页了---000')
