@@ -461,8 +461,10 @@ export default {
       if(state.pushMsgWay) {
         Mepal.getToken().then(res => {
           console.log('跳转链接获取的====token ==== ', res);
+          localStorage.setItem('Admin-Token', res);
           im.gotoLoginMepal({token: res}).then(async (data) => {
             const {userId} = data.data;
+            localStorage.setItem('UserId', userId);
             if(userId) {
               await fetchTimInfo();
               await initTencentTim();
