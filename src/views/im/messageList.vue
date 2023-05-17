@@ -69,19 +69,19 @@ export default {
     Mepal.setTitle({title: 'im'});
 
     const siteToken = () => {
-      localStorage.setItem('Admin-Token', 'b4d523a332dc40ce9fb1599ba8afa9a0');
-      localStorage.setItem('UserId', '14815');
-      getList();
-      // Mepal.getToken().then(res => {
-      //   console.log('token ==== ', res);
-      //   localStorage.setItem('Admin-Token', res);
-      //   im.gotoLoginMepal({token: res}).then((data) => {
-      //     const {userId} = data.data;
-      //     console.log('userId ==== ', userId);
-      //     localStorage.setItem('UserId', userId);
-      //     getList();
-      //   });
-      // });
+      // localStorage.setItem('Admin-Token', 'b4d523a332dc40ce9fb1599ba8afa9a0');
+      // localStorage.setItem('UserId', '14815');
+      // getList();
+      Mepal.getToken().then(res => {
+        console.log('token ==== ', res);
+        localStorage.setItem('Admin-Token', res);
+        im.gotoLoginMepal({token: res}).then((data) => {
+          const {userId} = data.data;
+          console.log('userId ==== ', userId);
+          localStorage.setItem('UserId', userId);
+          getList();
+        });
+      });
     }
 
     /*
