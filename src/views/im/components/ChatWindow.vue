@@ -331,14 +331,14 @@ export default {
     * 清空未读消息个数===0
     * */
     const clearAllUnreadMessageCount = async () => {
-      let promise = imBaseState.$tim.setMessageRead({conversationID: state.conversationId});
-      promise.then(function(imResponse) {
-        // 已读上报成功，指定 ID 的会话的 unreadCount 属性值被置为0
-        console.log('未读消息清空为0');
-      }).catch(function(imError) {
-        // 已读上报失败
-        console.warn('setMessageRead error:', imError);
-      });
+      // let promise = imBaseState.$tim.setMessageRead({conversationID: state.conversationId});
+      // promise.then(function(imResponse) {
+      //   // 已读上报成功，指定 ID 的会话的 unreadCount 属性值被置为0
+      //   console.log('未读消息清空为0');
+      // }).catch(function(imError) {
+      //   // 已读上报失败
+      //   console.warn('setMessageRead error:', imError);
+      // });
     };
 
     const onTimModifiedMessage = (event) => {
@@ -461,6 +461,17 @@ export default {
       await sendMessage(message);
     };
 
+    const reLoginMepal = async (token) => {
+      im.gotoLoginMepal({token}).then(async (data) => {
+        const {userId} = data.data;
+        if(userId) {
+          await fetchTimInfo();
+          await initTencentTim();
+          await loginTim();
+        }
+      });
+    }
+
     onMounted( async () => {
       if(state.pushMsgWay) {
         const token = localStorage.getItem('Admin-Token');
@@ -472,6 +483,10 @@ export default {
             await loginTim();
           }
         });
+      } else {
+        await fetchTimInfo();
+        await initTencentTim();
+        await loginTim();
       }
     })
 

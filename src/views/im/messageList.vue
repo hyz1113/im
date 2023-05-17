@@ -69,7 +69,7 @@ export default {
     Mepal.setTitle({title: 'IM 消息列表'});
 
     const siteToken = () => {
-      // localStorage.setItem('Admin-Token', '8e8fd2b2cd834c119d75fe6a9f3f49c0');
+      // localStorage.setItem('Admin-Token', '2d669d663dff4346a45776f178869131');
       // localStorage.setItem('UserId', '14815');
       // getList();
       Mepal.getToken().then(res => {
