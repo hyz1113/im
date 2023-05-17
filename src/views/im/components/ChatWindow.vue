@@ -148,12 +148,7 @@ export default {
     }
 
     const setMessageRead = async () => {
-      if (+localStorage.getItem('UserId') === +customerData.ownerId) {
-        await imBaseState.$tim.setMessageRead({
-          conversationID: state.conversationId
-        });
-        updateUnreadMessageCount();
-      }
+      updateUnreadMessageCount();
     };
 
     const buildMessageKey = (message) => {
@@ -331,8 +326,9 @@ export default {
     * 清空未读消息个数===0
     * */
     const clearAllUnreadMessageCount = async () => {
+      alert('清空消息');
       let promise = imBaseState.$tim.setMessageRead({conversationID: state.conversationId});
-      promise.then(function(imResponse) {
+      promise.then(function() {
         // 已读上报成功，指定 ID 的会话的 unreadCount 属性值被置为0
         console.log('未读消息清空为0');
       }).catch(function(imError) {
