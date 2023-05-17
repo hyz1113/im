@@ -66,7 +66,7 @@ export default {
       TEXT: 'TIMTextElem',
       IMAGE: 'TIMImageElem'
     };
-    Mepal.setTitle({title: 'im'});
+    Mepal.setTitle({title: 'IM 消息列表'});
 
     const siteToken = () => {
       // localStorage.setItem('Admin-Token', 'b4d523a332dc40ce9fb1599ba8afa9a0');
