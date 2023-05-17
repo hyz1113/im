@@ -326,7 +326,6 @@ export default {
     * 清空未读消息个数===0
     * */
     const clearAllUnreadMessageCount = async () => {
-      alert('清空消息');
       let promise = imBaseState.$tim.setMessageRead({conversationID: state.conversationId});
       promise.then(function() {
         // 已读上报成功，指定 ID 的会话的 unreadCount 属性值被置为0
@@ -460,14 +459,16 @@ export default {
 
     onMounted( async () => {
       if(state.pushMsgWay) {
-        const token = localStorage.getItem('Admin-Token');
-        im.gotoLoginMepal({token}).then(async (data) => {
-          const {userId} = data.data;
-          if(userId) {
-            await fetchTimInfo();
-            await initTencentTim();
-            await loginTim();
-          }
+        Mepal.getToken().then(res => {
+          console.log('跳转链接获取的====token ==== ', res);
+          im.gotoLoginMepal({token: res}).then(async (data) => {
+            const {userId} = data.data;
+            if(userId) {
+              await fetchTimInfo();
+              await initTencentTim();
+              await loginTim();
+            }
+          });
         });
       } else {
         await fetchTimInfo();
