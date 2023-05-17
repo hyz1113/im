@@ -78,7 +78,7 @@ export function get(url: string, params?: any, headers: Record<string, any> = {}
             .get(url, {params, headers})
             .then((res: any) => {
                 if([302].includes(res.code)) {
-                    Mepal.login();
+                    // Mepal.login();
                     showToast({
                         message: '请重新登录'
                     })
@@ -98,7 +98,7 @@ export function post(url: string, params?: any, headers: Record<string, any> = {
             .post(url, {...params}, {headers: headers})
             .then((res: any) => {
                 if([302].includes(res.code)) {
-                    Mepal.login();
+                    // Mepal.login();
                     showToast({
                         message: '请重新登录'
                     })

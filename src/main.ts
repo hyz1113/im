@@ -17,6 +17,7 @@ import {
  Locale,
  Toast,
  Loading,
+ Badge,
 } from 'vant';
 import Vconsole from '@/utils/vconsole';
 import 'vant/lib/index.css';
@@ -42,5 +43,6 @@ const app = createApp(App);
     .use(Toast)
     .use(i18n)
     .use(common)
+    .use(Badge)
     .use(Vconsole)
     .mount('#app')
