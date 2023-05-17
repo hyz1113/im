@@ -74,12 +74,14 @@ export default {
       customerName: '',
       customerTimId: '',// 存储在腾讯的用户id
       conversationId: '',
+      pushMsgWay: '', // 是否是推送消息进入详情页
     });
     const {dispatch} = useStore();
     const { proxy } = getCurrentInstance();
     const route = useRoute();
     const router = useRouter();
     state.conversationID = route.query.userId;
+    state.pushMsgWay = route.query.way || '';
 
     const TYPES = computed(() => {
       return TIM.TYPES
@@ -284,7 +286,7 @@ export default {
       const messages = Array.isArray(event.data) ? event.data : [];
       if (messages.length) {
         // this.conversationId
-        let messageList = messages.filter(item => item.conversationID === 'C2C30071520');
+        let messageList = messages.filter(item => item.conversationID === state.conversationID);
         messageList = await buildMessageNickName(messageList);
         messageList.forEach(item => {
           state.messageList.push(item);
@@ -322,7 +324,21 @@ export default {
     };
 
     const updateUnreadMessageCount = () => {
-      console.log('更新未读的消息个数');
+      clearAllUnreadMessageCount();
+    };
+
+    /*
+    * 清空未读消息个数===0
+    * */
+    const clearAllUnreadMessageCount = async () => {
+      let promise = imBaseState.$tim.setMessageRead({conversationID: state.conversationId});
+      promise.then(function(imResponse) {
+        // 已读上报成功，指定 ID 的会话的 unreadCount 属性值被置为0
+        console.log('未读消息清空为0');
+      }).catch(function(imError) {
+        // 已读上报失败
+        console.warn('setMessageRead error:', imError);
+      });
     };
 
     const onTimModifiedMessage = (event) => {
@@ -445,11 +461,18 @@ export default {
       await sendMessage(message);
     };
 
-
     onMounted( async () => {
-      await fetchTimInfo();
-      await initTencentTim();
-      await loginTim();
+      if(state.pushMsgWay) {
+        const token = localStorage.getItem('Admin-Token');
+        im.gotoLoginMepal({token}).then(async (data) => {
+          const {userId} = data.data;
+          if(userId) {
+            await fetchTimInfo();
+            await initTencentTim();
+            await loginTim();
+          }
+        });
+      }
     })
 
     onBeforeRouteLeave(async (to, from, next) => {
