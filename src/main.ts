@@ -24,9 +24,12 @@ import 'vant/lib/index.css';
 import "@/assets/styles/mixins.scss"
 // 引入英文语言包
 import enUS from 'vant/es/locale/lang/en-US';
+import mepal from "@/utils/mepal";
 
 Locale.use('en-US', enUS);
 const app = createApp(App);
+// 初始化mepal 对象
+mepal.loaded()
 
  app.use(store)
     .use(router)
