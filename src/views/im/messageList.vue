@@ -69,19 +69,19 @@ export default {
     Mepal.setTitle({title: 'IM 消息列表'});
 
     const siteToken = () => {
-      // localStorage.setItem('Admin-Token', '2d669d663dff4346a45776f178869131');
-      // localStorage.setItem('UserId', '14815');
-      // getList();
-      Mepal.getToken().then(res => {
-        console.log('token ==== ', res);
-        localStorage.setItem('Admin-Token', res);
-        im.gotoLoginMepal({token: res}).then((data) => {
-          const {userId} = data.data;
-          console.log('userId ==== ', userId);
-          localStorage.setItem('UserId', userId);
-          getList();
-        });
-      });
+      localStorage.setItem('Admin-Token', '5dd997bcfeb84551a40d80be33eb34bc');
+      localStorage.setItem('UserId', '14815');
+      getList();
+      // Mepal.getToken().then(res => {
+      //   console.log('token ==== ', res);
+      //   localStorage.setItem('Admin-Token', res);
+      //   im.gotoLoginMepal({token: res}).then((data) => {
+      //     const {userId} = data.data;
+      //     console.log('userId ==== ', userId);
+      //     localStorage.setItem('UserId', userId);
+      //     getList();
+      //   });
+      // });
     }
 
     /*

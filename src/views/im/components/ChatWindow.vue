@@ -205,16 +205,14 @@ export default {
             const cloudCustomData = JSON.parse(messageCloudCustomData);
             if (cloudCustomData) {
               const userId = +cloudCustomData.userId;
-              // const senderUserName = this.messageNickNameMap.get(userId);
+              const senderUserName = state.messageNickNameMap.get(userId);
               message.senderUserId = userId;
-              message.senderUserName = '';
-              message.senderEmployeeId = '';
               const sender = state.messageNickNameMap.get(message.senderUserId);
               if (!sender && userId) {
                 notMapUserIds.push(userId);
               } else {
-                message.senderUserName = sender.imNickname || sender.realname || ''
-                message.senderEmployeeId = sender.employeeId || '';
+                message.senderUserName = senderUserName.imNickname || '';
+                message.senderEmployeeId = senderUserName.employeeId || '';
               }
             }
           } catch (ex) {
@@ -258,7 +256,7 @@ export default {
       let sender = state.messageNickNameMap.get(message.senderUserId);
       if (!sender && needGet) {
         await fetchUserNickNameByUserIds([message.senderUserId]);
-        sender = state.messageNickNameMap.get(message.senderUserId);
+        sender = state.messageNickNameMap.get(+message.senderUserId);
       }
       if (sender) {
         message.senderUserName = sender.imNickname || sender.realname || ''
@@ -389,19 +387,11 @@ export default {
 
     // 发送消息部分 ------------------------------
     const sendMessage = async (message) => {
-      message.senderUserId = localStorage.getItem('UserId') || '' // 预定从 列表里-- adminUserID获取;
-      await setMessageSenderInfo(message, true);
-      state.messageList.push(message);
       try {
-        const imResponse = await imBaseState.$tim.sendMessage(message);
-        const index = state.messageList.findIndex(item => item.ID === imResponse.data.message.ID)
-        const newMessage = imResponse.data.message;
-        newMessage.senderUserId = localStorage.getItem('UserId') || '' // 预定从 列表里-- adminUserID获取;
-        await setMessageSenderInfo(newMessage);
-        if (index > -1) {
-          state.messageList.splice(index, 1, newMessage);
-        }
-        console.log(`发送的消息是=== ${ JSON.stringify(newMessage)}`);
+        await imBaseState.$tim.sendMessage(message);
+        message.senderUserId = localStorage.getItem('UserId') || '' // 预定从 列表里-- adminUserID获取;
+        await setMessageSenderInfo(message, true);
+        state.messageList.push(message);
       } catch (error) {
         showToast( error.message || '发送失败');
       }
