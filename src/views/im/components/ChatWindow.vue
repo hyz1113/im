@@ -268,7 +268,7 @@ export default {
     };
 
     const bindTimEventListener = () => {
-      imBaseState.$tim.on(TIM.EVENT.CONVERSATION_LIST_UPDATED, onTimReady);
+      imBaseState.$tim.on(TIM.EVENT.SDK_READY, onTimReady);
       imBaseState.$tim.on(TIM.EVENT.MESSAGE_RECEIVED, onTimReceivedMessage);
       imBaseState.$tim.on(TIM.EVENT.MESSAGE_MODIFIED, onTimModifiedMessage);
       imBaseState.$tim.on(TIM.EVENT.MESSAGE_REVOKED, onTimRevokedMessage);
