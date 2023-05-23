@@ -1,39 +1,43 @@
 <template>
-  <div class="chat-window">
-    <div
-        v-for="item in messageList"
-        :key="item"
-    >
-      <message-tip v-if="item.type === TYPES.MSG_GRP_TIP"></message-tip>
-      <message-bubble
-          v-else-if="!item.isRevoked"
-          :data="item"
-          @contextmenu="onMessageItemContextmenu">
-        <!-- 基础的文本消息 -->
-        <message-text v-if="item.type === TYPES.MSG_TEXT" :data="item"/>
-        <!--图片信息 -->
-        <message-image v-else-if="item.type === TYPES.MSG_IMAGE" :data="item"/>
-        <message-audio v-else-if="item.type === TYPES.MSG_AUDIO" :data="item" @play="onPlayAudit"/>
-        <!-- <message-file v-else-if="message.type === TYPES.MSG_FILE" :data="message" />-->
-        <message-face v-else-if="item.type === TYPES.MSG_FACE" :data="item"/>
-        <message-not-support v-else :data="item"/>
-      </message-bubble>
+  <scroll-bottom @scrollTopGetList="refreshList">
+    <template v-slot:content>
+      <div class="chat-window">
+        <div
+            v-for="item in messageList"
+            :key="item"
+        >
+          <message-tip v-if="item.type === TYPES.MSG_GRP_TIP"></message-tip>
+          <message-bubble
+              v-else-if="!item.isRevoked"
+              :data="item"
+              @contextmenu="onMessageItemContextmenu">
+            <!-- 基础的文本消息 -->
+            <message-text v-if="item.type === TYPES.MSG_TEXT" :data="item"/>
+            <!--图片信息 -->
+            <message-image v-else-if="item.type === TYPES.MSG_IMAGE" :data="item"/>
+            <message-audio v-else-if="item.type === TYPES.MSG_AUDIO" :data="item" @play="onPlayAudit"/>
+            <!-- <message-file v-else-if="message.type === TYPES.MSG_FILE" :data="message" />-->
+            <message-face v-else-if="item.type === TYPES.MSG_FACE" :data="item"/>
+            <message-not-support v-else :data="item"/>
+          </message-bubble>
 
-      <!--        <message-revoked-->
-      <!--            v-else-->
-      <!--            :isEdit="item.type === TYPES.MSG_TEXT"-->
-      <!--            :data="item"-->
-      <!--        />-->
-    </div>
-    <message-send
-        :conversation-id="conversationId"
-        :imBaseState="imBaseState"
-        :customerTimId="customerTimId"
-        :messageList="messageList"
-        @sendTextMessage="sendTextMessage"
-        @sendImageMessage="sendImageMessage"
-    />
-  </div>
+          <!--        <message-revoked-->
+          <!--            v-else-->
+          <!--            :isEdit="item.type === TYPES.MSG_TEXT"-->
+          <!--            :data="item"-->
+          <!--        />-->
+        </div>
+        <message-send
+            :conversation-id="conversationId"
+            :imBaseState="imBaseState"
+            :customerTimId="customerTimId"
+            :messageList="messageList"
+            @sendTextMessage="sendTextMessage"
+            @sendImageMessage="sendImageMessage"
+        />
+      </div>
+    </template>
+  </scroll-bottom>
 </template>
 
 <script>
@@ -41,7 +45,7 @@ import {useStore} from 'vuex'
 import TIM from 'tim-js-sdk/tim-js-friendship';
 import TIMUploadPlugin from 'tim-upload-plugin';
 import {reactive, toRefs, getCurrentInstance, computed, onMounted, onBeforeUnmount, nextTick} from 'vue';
-import { useRoute, onBeforeRouteLeave, useRouter } from 'vue-router';
+import {useRoute, onBeforeRouteLeave, useRouter} from 'vue-router';
 import {im} from '@/api/im/api';
 import {List, showToast} from 'vant';
 import MessageBubble from './messages/bubble';
@@ -53,8 +57,9 @@ import MessageFace from './messages/face';
 import MessageNotSupport from './messages/notSupport';
 import MessageRevoked from './messages/revoked';
 import MessageSend from "./messages/send";
-import { IMBase } from '../mixins/base';
+import {IMBase} from '../mixins/base';
 import Mepal from '@/utils/mepal';
+import ScrollBottom from "@/views/im/components/scrollBottom";
 
 export default {
   setup() {
@@ -77,24 +82,25 @@ export default {
       pushMsgWay: '', // 是否是推送消息进入详情页
     });
     const {dispatch} = useStore();
-    const { proxy } = getCurrentInstance();
+    const {proxy} = getCurrentInstance();
     const route = useRoute();
     const router = useRouter();
     state.conversationID = route.query.userId;
     state.pushMsgWay = route.query.way || '';
 
+
     const TYPES = computed(() => {
       return TIM.TYPES
     })
 
-   const {
-        imBaseState,
-        createTencentTim,
-        loginTim,
-        loginOutTim,
-        fetchTimInfo,
-        fetchTimAccountFriends,
-   } = IMBase();
+    const {
+      imBaseState,
+      createTencentTim,
+      loginTim,
+      loginOutTim,
+      fetchTimInfo,
+      fetchTimAccountFriends,
+    } = IMBase();
 
     const onMessageItemContextmenu = () => {
       console.log('222');
@@ -124,16 +130,26 @@ export default {
     }
 
     const scrollToBottom = () => {
-      const pageHeight = window.screen.height;
       nextTick(() => {
-        window.scrollTo(0, pageHeight);
+        window.scrollTo(0, document.body.scrollHeight);
       })
+    }
+
+    // 重新加载列表
+    const refreshList = () => {
+      // fetchMessageList();
     }
 
     const fetchMessageList = async () => {
       Mepal.showLoading(); // 打开loading 窗
       let messageList;
-      messageList = await fetchMessageListByTim();
+      if (!state.isTimCompleted) {
+        messageList = await fetchMessageListByTim();
+        if (messageList.length) {
+          state.nextReqMessage = messageList[0];
+        }
+      }
+
       if (state.isTimCompleted && !state.isServerCompleted) {
         const serverMessageList = await fetchMessageListByServer();
         messageList = [...serverMessageList, ...messageList];
@@ -141,10 +157,14 @@ export default {
       }
       const newMessageList = await buildMessageNickName(messageList);
       state.messageList = [...newMessageList, ...state.messageList];
-      console.log(`获取到的消息的条数=== ${ state.messageList.length }`);
-      scrollToBottom();
+      console.log(`获取到的消息的条数=== ${state.messageList.length}`);
+
+      state.nextReqMessage = messageList[0];
+
       Mepal.hideLoading(); // 关闭loading 窗
       await setMessageRead();
+
+      scrollToBottom();
     }
 
     const setMessageRead = async () => {
@@ -163,7 +183,7 @@ export default {
       const params = {
         msgKey,
         customerUid: state.conversationID,
-        limit: 10,
+        limit: 700,
       };
       const res = await im.getHistoryMessageByServer(params);
       if (res && Array.isArray(res.data) && res.data.length) {
@@ -325,10 +345,10 @@ export default {
     * */
     const clearAllUnreadMessageCount = async () => {
       let promise = imBaseState.$tim.setMessageRead({conversationID: state.conversationId});
-      promise.then(function() {
+      promise.then(function () {
         // 已读上报成功，指定 ID 的会话的 unreadCount 属性值被置为0
         console.log('未读消息清空为0');
-      }).catch(function(imError) {
+      }).catch(function (imError) {
         // 已读上报失败
         console.warn('setMessageRead error:', imError);
       });
@@ -346,7 +366,7 @@ export default {
     };
 
     // 初始化腾讯的tim相关的功能
-    const initTencentTim = async() => {
+    const initTencentTim = async () => {
       if (!state.isInitTim) {
         state.isInitTim = await createTencentTim();
       }
@@ -393,7 +413,7 @@ export default {
         await setMessageSenderInfo(message, true);
         state.messageList.push(message);
       } catch (error) {
-        showToast( error.message || '发送失败');
+        showToast(error.message || '发送失败');
       }
     };
 
@@ -415,7 +435,7 @@ export default {
 
     const sendTextMessage = async (msg) => {
       const text = msg.trim();
-      const options = buildMessageOptions({ text: text }, 'text');
+      const options = buildMessageOptions({text: text}, 'text');
 
       const message = imBaseState.$tim.createTextMessage(options);
 
@@ -431,12 +451,12 @@ export default {
           ...tempMessage,
           progress: progress
         };
-        state.messageList.splice(index, 1, newMessage )
+        state.messageList.splice(index, 1, newMessage)
       }
     };
 
     const sendImageMessage = async (image) => {
-      const options = buildMessageOptions({ file: image }, 'file', (progress) => {
+      const options = buildMessageOptions({file: image}, 'file', (progress) => {
         onFileMessageProcess(progress, message);
       });
       console.log(`im  ${JSON.stringify(options)}`);
@@ -447,15 +467,15 @@ export default {
     };
 
 
-    onMounted( async () => {
-      if(state.pushMsgWay) {
+    onMounted(async () => {
+      if (state.pushMsgWay) {
         Mepal.getToken().then(res => {
           console.log('跳转链接获取的====token ==== ', res);
           localStorage.setItem('Admin-Token', res);
           im.gotoLoginMepal({token: res}).then(async (data) => {
             const {userId} = data.data;
             localStorage.setItem('UserId', userId);
-            if(userId) {
+            if (userId) {
               await fetchTimInfo();
               await initTencentTim();
               await loginTim();
@@ -474,7 +494,7 @@ export default {
       unBindTimeEventListener();
       imBaseState.$tim = null;
       next(() => {
-        router.push({path:'/list'})
+        router.push({path: '/list'})
       });
     })
 
@@ -485,6 +505,7 @@ export default {
       onMessageItemContextmenu,
       sendTextMessage,
       sendImageMessage,
+      refreshList,
     }
   },
   components: {
@@ -498,6 +519,7 @@ export default {
     MessageBubble,
     MessageRevoked,
     MessageSend,
+    ScrollBottom,
     List,
   },
 }

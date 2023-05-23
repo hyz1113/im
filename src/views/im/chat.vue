@@ -6,7 +6,6 @@
 
 <script>
 import ImChatMain from './components/ChatWindow.vue';
-import { im } from '@/api/im/api'
 import {reactive, toRefs} from "vue";
 import { useRoute } from 'vue-router';
 import Mepal from "@/utils/mepal";
@@ -39,7 +38,7 @@ export default {
 .chat {
   background: #f7f8fa;
   height: 100vh;
-  overflow-x: hidden;
+  //overflow-x: hidden;
 
   .header {
     padding: 10px;
