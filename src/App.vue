@@ -2,6 +2,7 @@
    <router-view/>
 </template>
 
+
 <script>
 import mepal from "@/utils/mepal";
 import {useRouter} from 'vue-router';
