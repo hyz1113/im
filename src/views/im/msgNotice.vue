@@ -182,7 +182,8 @@ export default {
 
     // this.flatTree(this.treeData2);
 
-    this.hanoi(3, '柱子一', '柱子二', '柱子三');
+    // this.hanoi(3, '柱子一', '柱子二', '柱子三');
+
 
   },
   methods: {
